@@ -81,7 +81,10 @@ class vision(sensor):
         super().__init__(path, sim)
     
     def get_image(self):
-        pass
+        img, resX, resY = self.sim.getVisionSensorCharImage(self.handle)
+        img = np.frombuffer(img, dtype=np.uint8).reshape(resY, resX, 3)
+        img = cv2.flip(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), 0)
+        return img
     
 class proximity(sensor):
     def __init__(self, path: str, sim=None):
