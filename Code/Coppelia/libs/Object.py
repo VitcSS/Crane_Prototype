@@ -1,3 +1,4 @@
+from unittest import result
 from libs import zmqRemoteApi
 import numpy as np
 import cv2
@@ -18,7 +19,7 @@ class object:
 class BaxterCup(object):
     def __init__(self, path: str, sim=None):
         super().__init__(path, sim)
-        self.signal = self.path[1:]+'_active'
+        self.signal = self.sim.getObjectAlias(self.handle,4)+'_active'
         print(self.signal)
 
     def set_on(self):
@@ -56,7 +57,6 @@ class joint(object):
     @property
     def get_position(self):
         return self.sim.getJointPosition(self.handle)
-    
 
 class prismatic(joint):
     def __init__(self, path: str, upper=np.inf, lower=-np.inf, sim=None):
@@ -70,8 +70,7 @@ class revolute(joint):
 
     def set_velocity(self, vel):
         rad_vel = np.deg2rad(vel)
-        return super().set_velocity(rad_vel)
-
+        return super().set_velocity(rad_vel)    
 class sensor(object):
     def __init__(self, path: str, sim=None):
         super().__init__(path, sim)
@@ -85,13 +84,20 @@ class vision(sensor):
         img = np.frombuffer(img, dtype=np.uint8).reshape(resY, resX, 3)
         img = cv2.flip(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), 0)
         return img
-    
+  
 class proximity(sensor):
     def __init__(self, path: str, sim=None):
         super().__init__(path, sim)
     
-    def get_read(self):
-        pass
+    def detect(self):
+        self.sim.checkProximitySensor(self.handle, self.sim.handle_all)
+        result = self.sim.readProximitySensor(self.handle)
+        try :
+            if result[0] != 0:
+                return result[1]
+        except :
+            return np.inf
+
 
 
 

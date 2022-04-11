@@ -6,7 +6,9 @@ class Crane:
     def __init__(self,XY,Z,Tool,Cam,Alignment):
         self.XY = revolute(XY,20,-20)
         self.Z = prismatic(Z,0.07,-0.07)
-        self.Tool = self.sim.getObject(Tool)
+        self.Tool = BaxterCup(Tool)
+        self.Tool.set_off()
         self.Cam = vision(Cam)
         self.Alignment = proximity(Alignment)
+        self.Alignment.detect()
     
