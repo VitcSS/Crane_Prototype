@@ -18,13 +18,13 @@ if __name__ == '__main__':
     while Model.Alignment.detect() < 0.55: pass
     Model.Z.set_velocity(0)
     Model.XY.set_velocity(8)
-    while Model.XY.get_position > 180: print(Model.XY.get_position)
+    while Model.XY.get_position < 179.99: print(Model.XY.get_position)
     Model.XY.set_velocity(0)
     Model.Z.set_velocity(-0.08)
-    while Model.Alignment.detect() > 0.03: pass
+    while Model.Alignment.detect() > 0.03+0.10: pass
     object.sim.setObjectParent(Coin,-1,False)
     Model.Z.set_velocity(0.08)
-    while Model.Alignment.detect() < 0.55-0.21: pass
+    while Model.Alignment.detect() < 0.55: pass
     Model.Z.set_velocity(0)
     time.sleep(3)
     object.sim.stopSimulation()
