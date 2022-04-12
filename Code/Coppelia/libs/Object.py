@@ -56,7 +56,7 @@ class joint(object):
 
     @property
     def get_position(self):
-        return self.sim.getJointPosition(self.handle)
+        return np.rad2deg(self.sim.getJointPosition(self.handle))
 
 class prismatic(joint):
     def __init__(self, path: str, upper=np.inf, lower=-np.inf, sim=None):
@@ -71,6 +71,7 @@ class revolute(joint):
     def set_velocity(self, vel):
         rad_vel = np.deg2rad(vel)
         return super().set_velocity(rad_vel)    
+
 class sensor(object):
     def __init__(self, path: str, sim=None):
         super().__init__(path, sim)
@@ -91,13 +92,28 @@ class proximity(sensor):
     
     def detect(self):
         self.sim.checkProximitySensor(self.handle, self.sim.handle_all)
-        result = self.sim.readProximitySensor(self.handle)
+        result = None
         try :
-            if result[0] != 0:
-                return result[1]
+            result,distance,point,handle,normal = self.sim.readProximitySensor(self.handle)
         except :
+            result = self.sim.readProximitySensor(self.handle)
+        if result == 1:
+            # print('Distance is ',distance)
+            # print('Handle is ',handle)
+            # print(self.sim.getObjectAlias(handle))
+            return distance
+        else:
+            # print(result)
             return np.inf
 
+class magnet(object):
+    def __init__(self, body_path: str, sensor_path : str, junction_path :str = '/Atatcher', sim=None):
+        super().__init__(body_path, sim)
+        self.sensor = sensor(sensor_path)
+        self.juntion_handle = self.sim.getObject(junction_path)
+    def catch(self, treshold = 0.03):
+        if self.sensor.detect() < treshold:
+            self.sim.setObjectParent()
 
 
 
