@@ -7,14 +7,9 @@ import time
 from view import Controller
 import globalData as globalData
 
+
 gui = Controller.TkThread()
 
-if __name__ == "__main__":
-    globalData.setCurrentScreen = "POR01001"
+if __name__ == "__main__":   
 
-    while True:
-        print("Main loop")
-        globalData.setCurrentScreen = "GUI001"
-        time.sleep(1)
-        globalData.setCurrentScreen = "GUI002"
-        time.sleep(1)
+    globalData.tela_selecionada = "GUI003"

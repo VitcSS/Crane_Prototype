@@ -2,12 +2,12 @@
 
 import threading
 
-global setCurrentScreen
-setCurrentScreen = 'POR01001'
+global tela_selecionada
+tela_selecionada = 'POR01001'
 """Choice current screen for system."""
 
 """EVENTO PARA GERENCIAR INPUT DE DADOS"""
-inp_event = threading.Event()
+eventos = threading.Event()
 
 """VARIAVEIS GLOBAIS DE FLUXO DE DADOS COM INTERFACE"""
 global dataInput, dataOutput
