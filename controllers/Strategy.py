@@ -33,20 +33,21 @@ class Context():
         """
 
         self._strategy = strategy
-
-    def do_some_business_logic(self) -> None:
-        """
-        The Context delegates some work to the Strategy object instead of
-        implementing multiple versions of the algorithm on its own.
-        """
-
-        # ...
-
-        print("Context: Sorting data using the strategy (not sure how it'll do it)")
-        result = self._strategy.do_algorithm(["a", "b", "c", "d", "e"])
-        print(",".join(result))
-
-        # ...
+    
+    def rotacionar_torre(self, graus: int) -> bool:
+        return self._strategy.rotacionar_torre(graus)
+    
+    def mover_ferramenta(self, centimentros: int) -> bool:
+        return self._strategy.mover_ferramenta(centimentros)
+    
+    def zerar_posicao(self) -> bool:
+        return self._strategy.zerar_posicao()
+    
+    def valor_sensores(self) -> bool:
+        return self._strategy.valor_sensores()
+    
+    def atuar_ferramenta(self, status) -> bool:
+        return self._strategy.atuar_ferramenta(status)
 
 
 class Strategy(ABC):
@@ -57,7 +58,23 @@ class Strategy(ABC):
     The Context uses this interface to call the algorithm defined by Concrete
     Strategies.
     """
+    
+    @abstractmethod
+    def rotacionar_torre(self, graus: int) -> bool:
+        pass
+    
+    @abstractmethod
+    def mover_ferramenta(self, centimentros: int) -> bool:
+        pass
+    
+    @abstractmethod
+    def zerar_posicao(self) -> bool:
+        pass
 
     @abstractmethod
-    def do_algorithm(self, data: List):
+    def valor_sensores(self) -> dict:
+        pass
+
+    @abstractmethod
+    def atuar_ferramenta(self, status: bool) -> bool:
         pass
