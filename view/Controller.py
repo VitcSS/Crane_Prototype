@@ -8,7 +8,6 @@ import threading
 from pathlib import Path
 import os
 import time
-import pyglet
 
 import globalData as globalData
 from libs.Screen import center
