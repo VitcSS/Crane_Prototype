@@ -4,7 +4,7 @@ const int stepsPerRevolution = 64;
 
 //Inicializa a biblioteca utilizando as portas de 8 a 11 para
 //ligacao ao motor
-Stepper myStepper(stepsPerRevolution, 8, 10, 9, 11);
+Stepper myStepper(stepsPerRevolution, 2, 4, 3, 5);
 
 void setup()
 {
@@ -34,6 +34,7 @@ void loop()
       Serial.print("Steps: ");
       Serial.println(steps);
       myStepper.step(steps);
+      Serial.print("Sai da função");
       delay(2);
     }
   }
