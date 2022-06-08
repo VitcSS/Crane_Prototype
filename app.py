@@ -9,4 +9,4 @@ import globalData as globalData
 gui = Controller.TkThread()
 
 if __name__ == "__main__":   
-    globalData.tela_selecionada = "GUI003"
+    globalData.tela_selecionada = "GUI002"
