@@ -2,6 +2,7 @@ from time import sleep
 import tkinter as tk
 from tkinter import font as tkfont
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
+from turtle import onclick
 from PIL import Image
 from PIL import ImageTk
 import threading
@@ -12,10 +13,8 @@ import time
 import globalData as globalData
 from libs.Screen import center
 
-scr_w = 1024
-scr_h = 768
-
-background_color = "#F0F0F3"
+background_color = "#121212"
+text_color = "#F0F0F3"
 transparent_color = "#915f07"
 buttonbackground_color = "#003333"
 buttonActivebackground_color = "#669999"
@@ -50,19 +49,16 @@ def measureslog(string):
     log.close()
 
 class TkThread(threading.Thread):
-
     def __init__(self):
         threading.Thread.__init__(self)
         self.start()
         
     def run(self):
         self.root = tk.Tk()
-        self.root.configure(background=background_color)
-        window_height = 768
-        window_width = 1360
+        window_height = 1080
+        window_width = 1920
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
-
         x_cordinate = int((screen_width/2) - (window_width/2))
         y_cordinate = int((screen_height/2) - (window_height/2))
 
@@ -75,9 +71,10 @@ class TkThread(threading.Thread):
         #self.root.geometry("{0}x{1}+0+0".format(str(scr_w),str(scr_h)))
 
         self.frames = {}
-        for F in (GUI001, GUI002, GUI003):
+        for F in (GUI001, GUI001, GUI002):
             page_name = F.__name__
             frame = F(parent=self.root, controller=self)
+            frame.configure(background=background_color)
 
             self.frames[page_name] = frame
             frame.place(relx=0, rely=0, relwidth=1, relheight=1)
@@ -87,9 +84,9 @@ class TkThread(threading.Thread):
             # exitButton.place(relx=0.95, rely=0.05, anchor="center")
 
         # start page
+        self.root.configure(background=background_color)
         self.show_frame("GUI001")
         self.select_page()
-        self.root.config(background=background_color)
         self.root.mainloop()
 
     def select_page(self):
@@ -115,58 +112,16 @@ class TkThread(threading.Thread):
 
     def exit_callback(self):
         os._exit(0)
-
-class GUI001(tk.Frame):
-
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-        self.page_build()
-
-    def page_build(self):
-        setBackgroundLabel(self)
         
-        #Titulo Principal
-        title = tk.Label(self, text= "Guindaste", bg=background_color, font=("Helvetica", 35, "bold"))
-        title.place(relx=0.5, rely=0.15, anchor="center")
-
-        #Subtitulo
-        subTitle = tk.Label(self, text= "Inicialização...", bg=background_color, font=("Helvetica", 20))
-        subTitle.place(relx=0.5, rely=0.30, anchor="center")
-
-        #Id da tela
-        subTitle = tk.Label(self, text= "GUI001", bg=background_color, font=("Helvetica", 11))
-        subTitle.place(relx=0.88, rely=0.95)
-
-class GUI002(tk.Frame):
-
+class GUI001(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         self.page_build()
-
-    def page_build(self):
-        setBackgroundLabel(self)
-
-        #Titulo Principal
-        title = tk.Label(self, text= "Guindaste", bg=background_color, font=("Helvetica", 35, "bold"))
-        title.place(relx=0.5, rely=0.15, anchor="center")
-
-        #Subtitulo
-        subTitle = tk.Label(self, text= "FALHA DE INICIALIZAÇÃO.", foreground="red", bg=background_color, font=("Helvetica", 20, "bold"))
-        subTitle.place(relx=0.5, rely=0.30, anchor="center")
-
-        #Id da tela
-        subTitle = tk.Label(self, text= "GUI002", bg=background_color, font=("Helvetica", 11))
-        subTitle.place(relx=0.88, rely=0.95)
-
-class GUI003(tk.Frame):
-
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-        self.page_build()
-
+        
+    def simulation_click(self, event):
+        print(event)
+        globalData.tela_selecionada = "GUI002"
 
     def page_build(self):
         #Titulo Principal
@@ -174,24 +129,42 @@ class GUI003(tk.Frame):
         # title.place(x=280, y=40, width=890, height=130)
         
         #Titulo Principal
-        title = tk.Label(self, text= "Simulação", foreground="#313B3F", bg=background_color, font=("Inter Regular", 48))
-        title.place(x=185, y=346, width=415, height=76)
+        title = tk.Label(self, text= "Simulação", foreground=text_color, bg=background_color, font=("Inter Regular", 64))
+        title.place(x=162, y=488, width=465, height=90)
+        title.bind("<Button-1>", self.simulation_click)
 
         #Subtitulo
-        subTitle = tk.Label(self, text= "Clique para começar com o Copelia", foreground="#313B3F", bg=background_color, font=("Inter Regular", 12))
-        subTitle.place(x=260, y=446, width=274, height=76)
+        subTitle = tk.Label(self, text= "Clique para começar com o Copelia", foreground=text_color, bg=background_color, font=("Inter Regular", 16))
+        subTitle.place(x=162, y=598, width=465, height=24)
         
         #Titulo Principal
-        title = tk.Label(self, text= "Físico", foreground="#313B3F", bg=background_color, font=("Inter Regular", 48))
-        title.place(x=860, y=346, width=328, height=76)
+        title = tk.Label(self, text= "Físico", foreground=text_color, bg=background_color, font=("Inter Regular", 64))
+        title.place(x=1293, y=488, width=465, height=90)
 
         #Subtitulo
-        subTitle = tk.Label(self, text= "Clique para começar com o Arduino", foreground="#313B3F", bg=background_color, font=("Inter Regular", 12))
-        subTitle.place(x=890, y=446, width=274, height=76)
+        subTitle = tk.Label(self, text= "Clique para começar com o Arduino", foreground=text_color, bg=background_color, font=("Inter Regular", 16))
+        subTitle.place(x=1293, y=598, width=465, height=24)
         
         #Divisor
         # divisor = tk.Label(self, text= "", foreground="#313B3F", bg=background_color, font=("Inter Regular", 1), borderwidth=0.5, relief="solid")
         # divisor.place(x=724, y=504, width=2, height=240)
+
+class GUI002(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        self.page_build()
+        
+    def simulation_click(self, event):
+        print(event)
+
+    def page_build(self):     
+        #Titulo Principal
+        title = tk.Label(self, text= "Guindaste Simulado", foreground=text_color, bg=background_color, font=("Inter Regular", 20))
+        title.place(x=918, y=14, width=260, height=24)
+        title.bind("<Button-2>", self.simulation_click)        
+        w1 = tk.Scale(self, from_=0, to=360, tickinterval=1)
+        w1.place(x=918, y= 56)
 
 
 if __name__ == "__main__":
