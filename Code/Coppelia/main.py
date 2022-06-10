@@ -12,7 +12,8 @@ if __name__ == '__main__':
                   Cam = '/Cam',
                   Alignment='/Ray_Sensor')
     Model.Z.set_velocity(-0.08)
-    while Model.Alignment.detect() > 0.03: pass
+    while Model.Alignment.detect() > 0.03: 
+            print("Current Position : ", Model.Alignment.detect())
     object.sim.setObjectParent(Coin,object.sim.getObject('/Atatcher'),True)
     Model.Z.set_velocity(0.08)
     while Model.Alignment.detect() < 0.55: pass
