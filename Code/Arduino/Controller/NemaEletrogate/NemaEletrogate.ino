@@ -4,16 +4,7 @@
 // Gustavo Murta 29/mar/2018
 
 // Definiçoes das Portas Digitais do Arduino
-/*
-int RST = 8;              // Porta digital D08 - reset do A4988
-int SLP = 9;              // Porta digital D09 - dormir (sleep) A4988
-int ENA = 7;              // Porta digital D07 - ativa (enable) A4988
-int MS1 = 4;              // Porta digital D04 - MS1 do A4988
-int MS2 = 5;              // Porta digital D05 - MS2 do A4988
-int MS3 = 6;              // Porta digital D06 - MS3 do A4988
-int DIR = 3;              // Porta digital D03 - direção (direction) do A4988
-int STP = 2;              // Porta digital D02 - passo(step) do A4988
-*/
+
 int RST = 11;              // Porta digital D08 - reset do A4988
 int ENA = 12;              // Porta digital D07 - ativa (enable) A4988
 int DIR = 9;              // Porta digital D03 - direção (direction) do A4988
@@ -30,14 +21,13 @@ float RPM;                // Rotacoes por minuto
 void setup()
 {
   Serial.begin(9600);
-
-  DDRD = DDRD | B11111100;  // Configura Portas D02 até D07 como saída
+  pinMode(RST, OUTPUT);
+  pinMode(ENA, OUTPUT);
+  pinMode(DIR, OUTPUT);
+  pinMode(STP, OUTPUT);
   disa_A4988();             // Desativa o chip A4988
-
-  DDRB = 0x0F;              // Configura Portas D08,D09,D10 e D11 como saída
-  // digitalWrite(SLP, HIGH);  // Desativa modo sleep do A4988
   rst_A4988();              // Reseta o chip A4988
-  ena_A4988();              // Ativa o chip A4988
+  // ena_A4988();              // Ativa o chip A4988
 }
 
 void rst_A4988()
@@ -80,60 +70,62 @@ void PASSO()                         // Pulso do passo do Motor
   delayMicroseconds (MeioPeriodo);   // MeioPeriodo de X microsegundos
 }
 
-void FREQUENCIA()                    // calcula Pulsos, PPS e RPM
+void FREQUENCIA(int graus = 0)                    // calcula Pulsos, PPS e RPM
 {
-  Pulsos = PPR * Voltas;             // Quantidade total de Pulsos (PPR = pulsos por volta)
+  /*
+  PPR = 360/g_p = 3200
+  g_p = 360/3200
+  g_p = 0,1125 graus
+  Para girar a torre 360 x5
+  g_p = 0,5625 graus
+  */
+  if (graus != 0){
+    Pulsos = graus * 0,5625;
+  } else {
+    Pulsos = PPR * Voltas;             // Quantidade total de Pulsos (PPR = pulsos por volta)    
+  }
+
   PPS = 1000000 / (2 * MeioPeriodo); // Frequencia Pulsos por segundo
   RPM = (PPS * 60) / PPR;            // Calculo do RPM
 }
 
-/*
+int giraMotor(int graus) {
+  Print_RPM ();                           // Print Voltas, PPS e  RPM
+  if (graus>360 || graus <-360 || graus == 0) return 0;
+  Print_RPM ();                           // Print Voltas, PPS e  RPM
+  int graus_intern = graus;
+  if (graus > 0) {
+    HOR();
+  } else {
+    AHR();
+    graus_intern = -1 * graus;
+  }
 
-void FULL()
-{
-  Serial.println(" Passo Completo  PPR = 200 ");
-  PPR = 200;                 // PPR = pulsos por volta
-  digitalWrite(MS1, LOW);    // Configura modo Passo completo (Full step)
-  digitalWrite(MS2, LOW);
-  digitalWrite(MS3, LOW);
+  /*
+  3200 passos - 360 graus
+  x passos    - 1 grau
+  x = 3200/360
+  x = 8,888888888888888888
+  */
+
+  float pulsos_f = graus_intern*8.888888888888888888*5;
+
+  Serial.print(" pulsos= ");
+  Serial.print(pulsos_f);
+  Serial.print(" Passos= ");
+  Serial.print(int(pulsos_f));
+  ena_A4988();                            // Ativa o chip A4988  
+  for (int i = 0; i <= int(pulsos_f); i++)       // Incrementa o Contador
+  {
+    PASSO();                              // Avança um passo no Motor
+  }
+  disa_A4988();                           // Desativa o chip A4988
+  delay (1000) ;                          // Atraso de 1 segundo
+  
+  if (graus > 0) return int(pulsos_f/(8.888888888888888888*5));
+  else return -int(pulsos_f/(8.888888888888888888*5));
 }
 
-void HALF()
-{
-  Serial.println(" Meio Passo  PPR = 400 ");
-  PPR = 3200;                  // PPR = pulsos por volta
-  digitalWrite(MS1, HIGH);    // Configura modo Meio Passo (Half step)
-  digitalWrite(MS2, HIGH);
-  digitalWrite(MS3, HIGH);
-}
-
-void P1_4()
-{
-  Serial.println(" Micro-passo 1/4  PPR = 800 ");
-  PPR = 800;                 // PPR = pulsos por volta
-  digitalWrite(MS1, LOW);    // Configura modo Micro Passo 1/4
-  digitalWrite(MS2, HIGH);
-  digitalWrite(MS3, LOW);
-}
-
-void P1_8()
-{
-  Serial.println(" Micro-passo 1/8  PPR = 1600 ");
-  PPR = 1600;                 // PPR = pulsos por volta
-  digitalWrite(MS1, HIGH);    // Configura modo Micro Passo 1/8
-  digitalWrite(MS2, HIGH);
-  digitalWrite(MS3, LOW);
-}
-
-void P1_16()
-{
-  Serial.println(" Micro-passo 1/16  PPR = 3200 ");
-  PPR = 3200;                 // PPR = pulsos por volta
-  digitalWrite(MS1, HIGH);    // Configura modo Micro Passo 1/16
-  digitalWrite(MS2, HIGH);
-  digitalWrite(MS3, HIGH);
-}
-*/
 void TesteMotor()
 {
   Print_RPM ();                           // Print Voltas, PPS e  RPM
@@ -164,6 +156,8 @@ void Print_RPM ()
   Serial.print(Voltas);
   Serial.print(" Pulsos= ");
   Serial.print(Pulsos);
+  Serial.print(" Pulsos= ");
+  Serial.print(int(Pulsos));
   Serial.print(" PPS= ");
   Serial.print(PPS, 2);
   Serial.print(" RPM= ");
@@ -173,11 +167,10 @@ void Print_RPM ()
 void loop()
 {
   Serial.println();
-  // FULL();          // Selecione aqui o modo de passo
-  // HALF();        // desmarque o comentario somente da opcao desejada
-  //P1_4();
-  //P1_8();
-  //P1_16();
-  Voltas = 1;        // Selecione o numero de Voltas
-  TesteMotor();      // Inicia teste do motor
+  Voltas = 5;        // Selecione o numero de Voltas
+  // TesteMotor();      // Inicia teste do motor
+  giraMotor(90);
+  delay(2000);
+  giraMotor(-90);
+  delay(2000);
 }
