@@ -1,7 +1,7 @@
 from unittest import result
 from libs import zmqRemoteApi
 import numpy as np
-import cv2
+# import cv2
 
 class object:
     try : 
