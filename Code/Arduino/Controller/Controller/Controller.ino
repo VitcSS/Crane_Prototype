@@ -16,11 +16,12 @@ int executeCommand = 0;
 int distanceTool = 0;
 // Indica a posição da torre
 int towerPosition = 0;
+#define MAX_POS_TOWER 720
 // Indica se o eletroima esta ativo ou não
 int electromagnet = 0;
 
 // Indica a posição da ferramenta
-int toolPosition = 0;
+int toolPosition = 30;
 
 #define RST 11              // Porta digital D08 - reset do A4988
 #define ENA 12              // Porta digital D07 - ativa (enable) A4988
@@ -33,6 +34,9 @@ boolean sentido = true;   // Variavel de sentido
 long PPR = 3200;           // Número de passos por volta
 long Pulsos;              // Pulsos para o driver do motor
 float RPM;                // Rotacoes por minuto
+
+// Inicia variáveis de tempo
+unsigned long telemetria = millis();
 
 int RELE = 8;
 
@@ -109,8 +113,25 @@ int giraMotorFerrementa(int centimetros)
     */
     int uma_volta_steps = 2048;
     float uma_volta_cm = 13.823;
-    int steps_um_cm = uma_volta_steps/uma_volta_cm;         
-    motorVertical.step(centimetros*steps_um_cm);
+    int steps_um_cm = uma_volta_steps/uma_volta_cm;       
+    int contador = 0;
+    for (int i = 0; i<abs(centimetros); i++) {
+      if (centimetros > 0)
+      {
+        motorVertical.step(steps_um_cm);
+        toolPosition = toolPosition - contador;
+        contador = i+1;
+        toolPosition = toolPosition + contador;
+      }
+      else 
+      {
+        motorVertical.step(-1*steps_um_cm);
+        toolPosition = toolPosition + contador;
+        contador = i+1;
+        toolPosition = toolPosition - contador;
+      }
+      sendMessage();
+    }
     return centimetros;
   } else {
     return 0;
@@ -192,12 +213,42 @@ int giraMotorTorre(int graus)
   // Serial.print(" Passos= ");
   // Serial.print(int(pulsos_f));
   ena_A4988();                            // Ativa o chip A4988  
+  int contador = 0;
   for (int i = 0; i <= int(pulsos_f); i++)       // Incrementa o Contador
   {
     PASSO();                              // Avança um passo no Motor
+
+    // Verifica se já passou 1000 milisegundos
+    if((millis() - telemetria) > 1000){
+      if (graus > 0)
+      {
+        towerPosition = towerPosition - contador;
+        contador = int(i/(8.888888888888888888*5));
+        towerPosition = towerPosition + contador;
+      }
+      else 
+      {
+        towerPosition = towerPosition + contador;
+        contador = int(i/(8.888888888888888888*5));
+        towerPosition = towerPosition - contador;
+      }
+      sendMessage();
+      telemetria = millis();
+    }
   }
   disa_A4988();                           // Desativa o chip A4988
   delay (100) ;                          // Atraso de 1 segundo
+
+  if (graus > 0)
+  {
+    towerPosition = towerPosition - contador;
+    towerPosition = towerPosition + int(pulsos_f/(8.888888888888888888*5));
+  }
+  else 
+  {
+    towerPosition = towerPosition + contador;
+    towerPosition = towerPosition - int(pulsos_f/(8.888888888888888888*5));
+  }
   
   if (graus > 0) return int(pulsos_f/(8.888888888888888888*5));
   else return -int(pulsos_f/(8.888888888888888888*5));
@@ -230,6 +281,7 @@ void sendMessage ()
   messageToSend["distanceTool"]              = distanceTool;
   messageToSend["towerPosition"]             = towerPosition;
   messageToSend["electromagnet"]             = electromagnet;
+  messageToSend["toolPosition"]              = toolPosition;
     
   serializeJson(messageToSend, Serial);
   Serial.print('\n');
@@ -245,16 +297,25 @@ void readExecuteCommand ()
     command = receivedMessage["command"].as<String>();
     if (command.equals(ROTACIONAR)) {
       executeCommand = 1;
-      sendMessage();
       int value = receivedMessage["value"].as<int>();
-      int grausGirado = giraMotorTorre(value);
-      towerPosition = towerPosition + grausGirado;
+      if ((value + towerPosition) > MAX_POS_TOWER || (value + towerPosition) < -MAX_POS_TOWER) {
+        executeCommand = -1;
+        sendMessage();
+      } else {
+        sendMessage();
+        telemetria = millis();
+        int grausGirado = giraMotorTorre(value);
+      }
     } else if (command.equals(SUBIR_DESCER)) {
       executeCommand = 1;
-      distanceTool = 30;
-      towerPosition = 1;
-      electromagnet = 1;
-      sendMessage();
+      int value = receivedMessage["value"].as<int>();
+      if ((toolPosition + value) < 0 || (toolPosition + value) > 30) {
+        executeCommand = -1;
+        sendMessage();
+      } else {
+        giraMotorFerrementa(value);
+        sendMessage();
+      }
     } else if (command.equals(ZERAR)) {
       executeCommand = 1;
       distanceTool = 0;

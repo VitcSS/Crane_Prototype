@@ -7,8 +7,8 @@ if __name__ == "__main__":
     serialCommunication = SerialCommunication(port='COM11')
     serialCommunication.startCommunication()
 
-    messageToSend = {'command':'rotacionar', 'value': 90}
-    print(messageToSend, '\n -> ', serialCommunication.communication(messageToSend))
+    # messageToSend = {'command':'rotacionar', 'value': 90}
+    # print(messageToSend, '\n -> ', serialCommunication.communication(messageToSend))
     
     # messageToSend = {'command':'subir_descer', 'value': 10}
     # print(messageToSend, '\n -> ', serialCommunication.communication(messageToSend))

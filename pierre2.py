@@ -30,6 +30,7 @@ if __name__ == "__main__":
         if inp == 1:
             print("Valor: ", value)
             interface.rotacionar_torre(value)
+            interface.valor_sensores()
         if inp == 2:
             interface.mover_ferramenta(value)
         if inp == 3:
@@ -37,6 +38,8 @@ if __name__ == "__main__":
         if inp == 4:
             interface.valor_sensores()
         if inp == 5:
-            interface.atuar_ferramenta(value)
+            ima = False
+            if value == 1: ima = True
+            interface.atuar_ferramenta(ima)
         
         print("\n")

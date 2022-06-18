@@ -5,7 +5,7 @@ import json
 from libs.Singleton import Singleton
 
 class SerialCommunication(metaclass=Singleton):
-    def __init__(self, port: str, baudrate: int = 9600, timeoutUart: int = 0.1, MAXIMUM_TRY_SEND_RECEIVE_MICROCONTROLLER_SERIAL: int = 2, \
+    def __init__(self, port: str, baudrate: int = 9600, timeoutUart: int = 0.1, MAXIMUM_TRY_SEND_RECEIVE_MICROCONTROLLER_SERIAL: int = 1, \
         MAXIMUM_TRY_RECEIVE_MICROCONTROLLER_SERIAL: int = 10, DEBUG_MODE: bool = False):
         self.__microcontrollerConnectionSerial = None
         self.__port = port

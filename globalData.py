@@ -24,11 +24,9 @@ dataOutput = None
 """DADOS DE TELEMETRIA"""
 distanceTool = 0
 """Distancia da ferramenta com algo abaixo mais proximo, em centimetros"""
+toolPosition = 0
+"""Posicao da ferramenta em centimetros."""
 towerPosition = 0
 """Posicao da torre em graus."""
 electromagnet = 0
 """Indica se o eletroima esta ligado ou nao."""
-
-"""PAUSA THREAD DE LEITURA DA SERIAL"""
-pauseThread = 0
-"""Quando for enviar algum comando, essa flag eh responsavel por bloquear a thread."""
