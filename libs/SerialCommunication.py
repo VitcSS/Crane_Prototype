@@ -53,6 +53,17 @@ class SerialCommunication(metaclass=Singleton):
         if self.__microcontrollerConnectionSerial is not False:
             try:
                 self.__messageReceived = self.__microcontrollerConnectionSerial.readline().decode('utf-8').rstrip()
+                if len(self.__messageReceived)>0:
+                    try:
+                        self.__messageReceived = json.loads(self.__messageReceived)
+                        if type(self.__messageReceived) is dict:
+                            pass
+                        else:
+                            self.__messageReceived = {}
+                    except:
+                        self.__messageReceived = {}
+                else:
+                    self.__messageReceived = {}
             except:
                 pass
         return self.__messageReceived
@@ -80,16 +91,20 @@ class SerialCommunication(metaclass=Singleton):
             for COUNT_TRY_RECEIVE_MICROCONTROLLER_SERIAL in range(self.__MAXIMUM_TRY_RECEIVE_MICROCONTROLLER_SERIAL):
                 self.receiveMessage()
                 if len(self.__messageReceived)>0:
-                    try:
-                        self.__messageReceived = json.loads(self.__messageReceived)
-                        if type(self.__messageReceived) is dict:
-                            break
-                        else:
-                            self.__messageReceived = {}
-                    except:
-                        self.__messageReceived = {}
+                    break
                 else:
                     self.__messageReceived = {}
+                # if len(self.__messageReceived)>0:
+                #     try:
+                #         self.__messageReceived = json.loads(self.__messageReceived)
+                #         if type(self.__messageReceived) is dict:
+                #             break
+                #         else:
+                #             self.__messageReceived = {}
+                #     except:
+                #         self.__messageReceived = {}
+                # else:
+                #     self.__messageReceived = {}
             if self.__messageReceived != {}:
                 break
 

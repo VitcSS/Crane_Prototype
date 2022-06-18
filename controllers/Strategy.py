@@ -48,6 +48,9 @@ class Context():
     
     def atuar_ferramenta(self, status) -> bool:
         return self._strategy.atuar_ferramenta(status)
+    
+    def thread_atualiza_telemetria(self) -> bool:
+        return self._strategy.thread_atualiza_telemetria()
 
 
 class Strategy(ABC):
@@ -77,4 +80,8 @@ class Strategy(ABC):
 
     @abstractmethod
     def atuar_ferramenta(self, status: bool) -> bool:
+        pass
+    
+    @abstractmethod
+    def thread_atualiza_telemetria(self) -> None:
         pass
