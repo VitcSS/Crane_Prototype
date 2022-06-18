@@ -5,8 +5,8 @@
 #include <Ultrasonic.h>
  
 //Define os pinos para o trigger e echo
-#define pino_trigger 12
-#define pino_echo 13
+#define pino_trigger 7
+#define pino_echo 6
  
 //Inicializa o sensor nos pinos definidos acima
 Ultrasonic ultrasonic(pino_trigger, pino_echo);
