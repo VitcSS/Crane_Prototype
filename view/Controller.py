@@ -2,7 +2,9 @@ from time import sleep
 import tkinter as tk
 from tkinter import font as tkfont
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
-from turtle import onclick
+import customtkinter
+from tkinter.messagebox import showinfo
+from turtle import onclick, width
 from PIL import Image
 from PIL import ImageTk
 import threading
@@ -62,13 +64,12 @@ class TkThread(threading.Thread):
         x_cordinate = int((screen_width/2) - (window_width/2))
         y_cordinate = int((screen_height/2) - (window_height/2))
 
-        #self.root.attributes("-fullscreen", True)
-
         self.root.protocol("WM_DELETE_WINDOW", self.exit_callback)
-        #self.root.overrideredirect(True)
+        # self.root.overrideredirect(True)
         self.root.geometry("{}x{}+{}+{}".format(window_width, window_height, x_cordinate, y_cordinate))
+        # self.root.attributes("-fullscreen", True)
 
-        #self.root.geometry("{0}x{1}+0+0".format(str(scr_w),str(scr_h)))
+        # self.root.geometry("{0}x{1}+0+0".format(str(scr_w),str(scr_h)))
 
         self.frames = {}
         for F in (GUI001, GUI001, GUI002):
@@ -124,7 +125,7 @@ class GUI001(tk.Frame):
         globalData.tela_selecionada = "GUI002"
 
     def page_build(self):
-        #Titulo Principal
+        # Titulo Principal
         # title = tk.Label(self, text= "QUAL GUINDASTE VOCÊ DESEJA CONTROLAR?", foreground="#313B3F", bg=background_color, font=("Inter Regular", 28))
         # title.place(x=280, y=40, width=890, height=130)
         
@@ -150,6 +151,8 @@ class GUI001(tk.Frame):
         # divisor.place(x=724, y=504, width=2, height=240)
 
 class GUI002(tk.Frame):
+    # l1 = None
+    # l2 = None
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
@@ -157,16 +160,86 @@ class GUI002(tk.Frame):
         
     def simulation_click(self, event):
         print(event)
-
+        
+    def popup_showinfo(self):
+        showinfo("Window", "Hello World!")
+    
     def page_build(self):     
-        #Titulo Principal
+        # Titulo Principal
         title = tk.Label(self, text= "Guindaste Simulado", foreground=text_color, bg=background_color, font=("Inter Regular", 20))
-        title.place(x=918, y=14, width=260, height=24)
-        title.bind("<Button-2>", self.simulation_click)        
-        w1 = tk.Scale(self, from_=0, to=360, tickinterval=1)
-        w1.place(x=918, y= 56)
+        title.place(x=830, y=16, width=260, height=24)
+        
+        # Espaço da imagem
+        component_1_image = Image.open(relative_to_assets("images/Component 1.png"))
+        component_1_image = ImageTk.PhotoImage(component_1_image)
+        component_1 = tk.Label(self, image=component_1_image, bg=background_color)
+        component_1.image = component_1_image
+        component_1.place(x=701, y=123)  
 
+        # component_1 = tk.Button(
+        #             self,
+        #             image=component_1_image,
+        #             bg=background_color,
+        #             command=self.simulation_click,
+        #             height=510,
+        #             width=510,
+        #             highlightthickness = 0,
+        #             bd = 0,
+        #             activebackground=background_color,
+        #             activeforeground=background_color)
+        
+        distance_1_label = tk.Label()
+        # slider_test = tk.Scale(
+        #                     bg_color=None,
+        #                     border_color=None,
+        #                     foreground="#6B6B6B",
+        #                     progress_color="gray70",
+        #                     button_color="#608BD5",
+        #                     button_hover_color="#A4BDE6",
+        #                     from_=0,
+        #                     to=1,
+        #                     number_of_steps=None,
+        #                     width=241,
+        #                     height=8,
+        #                     corner_radius=8,
+        #                     button_corner_radius=1000,
+        #                     border_width=3,
+        #                     button_length=0,
+        #                     command=None,
+        #                     variable=None,
+        #                     orient="horizontal",
+        #                     value=0)
+        
+        # slider_test.place(x=124, y=57)
+         
+        rectangle_7_image = Image.open(relative_to_assets("images/Rectangle 7.png"))
+        rectangle_7_image = ImageTk.PhotoImage(rectangle_7_image)
+        rectangle_7 = tk.Label(self, image=rectangle_7_image, bg=background_color)
+        rectangle_7.image = rectangle_7_image
+        rectangle_7.place(x=254, y=758)
+        
+        slider_test = customtkinter.CTkSlider(
+                                        master=self,
+                                        from_=0,
+                                        to=1,
+                                        command=None,
+                                        width=240,
+                                        height=8,
+                                        fg_color="#666666",
+                                        progress_color="#E5E5E5",
+                                        button_color="#E5E5E5",
+                                        border_width=4,
+                                        button_hover_color="#E5E5E5",
+                                        bg_color="#262626",
+                                        border_color="#262626",
+                                        button_corner_radius=100,
+                                        highlightthickness=0,
+                                        corner_radius=0,
+                                        bd=0
+                                        )
+        
+        slider_test.border_color = "#262626"
+        slider_test.place(x=1214, y=789)
 
 if __name__ == "__main__":
-    gui = TkThread()
-    
+    gui = TkThread() 
