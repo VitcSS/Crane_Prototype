@@ -1,7 +1,7 @@
 from time import sleep
 import tkinter as tk
 from tkinter import font as tkfont
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, IntVar, StringVar
 from tracemalloc import start
 import customtkinter
 from tkinter.messagebox import showinfo
@@ -12,6 +12,8 @@ import threading
 from pathlib import Path
 import os
 import time
+
+from pygments import highlight
 
 import globalData as globalData
 from libs.Screen import center
@@ -167,32 +169,62 @@ class GUI001(tk.Frame):
 class GUI002(tk.Frame):
     # l1 = None
     # l2 = None
+    rotation_variable = None
+
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         self.page_build()
+        self.rotation_variable = IntVar()
 
     def simulation_click(self, event):
         print(event)
 
     def popup_showinfo(self):
         showinfo("Window", "Hello World!")
-        
+
     def rotation_command(self, event):
         print(event)
 
+    def rotation_entry_callback(self):
+        print(self.rotation_variable.get())
+        return True
+
     def page_build(self):
         # Titulo Principal
-        title = tk.Label(self, text="Guindaste Simulado", foreground=text_color,
-                         bg=background_color, font=("Inter Regular", 20))
+        title = tk.Label(
+            self,
+            text="Guindaste Simulado",
+            foreground=text_color,
+            bg=background_color,
+            font=("Inter Regular", 20))
+
         title.place(x=830, y=16, width=260, height=24)
+
+        # Ellipse da telemetria
+        ellipse_telemetry_image = Image.open(
+            relative_to_assets("images/Ellipse 15.png"))
+        ellipse_telemetry_image = ImageTk.PhotoImage(ellipse_telemetry_image)
+        ellipse_telemetry_base = tk.Label(
+            self,
+            image=ellipse_telemetry_image,
+            bg=background_color)
+        ellipse_telemetry_base.image = ellipse_telemetry_image
+        ellipse_telemetry_base.place(x=682, y=104)
 
         # Espaço da imagem
         component_1_image = Image.open(
             relative_to_assets("images/Component 1.png"))
         component_1_image = ImageTk.PhotoImage(component_1_image)
         component_1 = tk.Label(
-            self, image=component_1_image, bg=background_color)
+            self,
+            width=510,
+            height=510,
+            background=background_color,
+            foreground=background_color,
+            activebackground=background_color,
+            image=component_1_image,
+            bg=background_color)
         component_1.image = component_1_image
         component_1.place(x=701, y=123)
 
@@ -201,15 +233,70 @@ class GUI002(tk.Frame):
             relative_to_assets("images/Rectangle 7.png"))
         rectangle_7_image = ImageTk.PhotoImage(rectangle_7_image)
         rectangle_7 = tk.Label(
-            self, image=rectangle_7_image, bg=background_color)
+            self,
+            image=rectangle_7_image,
+            bg=background_color)
         rectangle_7.image = rectangle_7_image
         rectangle_7.place(x=254, y=758)
 
+        # Retângulo da telemetria - altura
+        height_telemetry_image = Image.open(
+            relative_to_assets("images/Group 5.png"))
+        height_telemetry_image = ImageTk.PhotoImage(height_telemetry_image)
+        height_telemetry_base = tk.Label(
+            self,
+            image=height_telemetry_image,
+            bg=background_color)
+        height_telemetry_base.image = height_telemetry_image
+        height_telemetry_base.place(x=1212, y=286)
+
         # Label do controle de rotação
-        rotation_1_label = tk.Label(self, text="Rotação", foreground=text_color,
-                                    bg=control_background_color, font=("Inter Regular", 16))
+        rotation_1_label = tk.Label(
+            self,
+            text="Rotação",
+            foreground=text_color,
+            bg=control_background_color,
+            font=("Inter Regular", 16))
         rotation_1_label.place(x=1336, y=808, width=90, height=32)
 
+        # Input do controle de rotação
+        rotation_canva = customtkinter.CTkFrame(
+            master=self,
+            height=60,
+            width=67,
+            bg_color=control_background_color,
+            fg_color=control_background_color,
+            border_width=0,
+            border_color=control_background_color)
+        # frame_1.pack()
+        rotation_canva.place(x=1246, y=817)
+
+        rotation_entry = customtkinter.CTkEntry(
+            master=rotation_canva,
+            placeholder_text="0",
+            height=30,
+            width=67,
+            border_width=0,
+            border_color=control_background_color,
+            text_font=("Inter Regular", 16),
+            justify="center",
+            fg_color=control_background_color,
+            text_color=text_color,
+            textvariable=self.rotation_variable,
+            validate="focusout",
+            validatecommand=self.rotation_entry_callback
+        )
+
+        rotation_entry.pack()
+
+        rotation_metrics_label = tk.Label(
+            self,
+            text="graus",
+            foreground=text_color,
+            bg=control_background_color,
+            font=("Inter Regular", 16))
+
+        rotation_metrics_label.place(x=1246, y=842, width=67, height=30)
         # Slider da rotação
         rotation_slider = customtkinter.CTkSlider(
             master=self,
@@ -265,6 +352,40 @@ class GUI002(tk.Frame):
         distance_slider.border_color = "#262626"
         distance_slider.place(x=436, y=846)
 
+        distance_canva = customtkinter.CTkFrame(
+            master=self,
+            height=60,
+            width=67,
+            bg_color=control_background_color,
+            fg_color=control_background_color,
+            border_width=0,
+            border_color=control_background_color)
+        # frame_1.pack()
+        distance_canva.place(x=345, y=817)
+
+        distance_entry = customtkinter.CTkEntry(
+            master=distance_canva,
+            placeholder_text="0",
+            height=30,
+            width=67,
+            border_width=0,
+            border_color=control_background_color,
+            text_font=("Inter Regular", 16),
+            justify="center",
+            fg_color=control_background_color,
+            text_color=text_color)
+
+        distance_entry.pack()
+
+        rotation_metrics_label = tk.Label(
+            self,
+            text="cm",
+            foreground=text_color,
+            bg=control_background_color,
+            font=("Inter Regular", 16))
+
+        rotation_metrics_label.place(x=345, y=842, width=67, height=30)
+
         # Botão liga e desliga o ímã
         magnet_image = Image.open(
             relative_to_assets("images/Group 15.png"))
@@ -280,7 +401,7 @@ class GUI002(tk.Frame):
             borderwidth=0,
             justify="center",
             highlightbackground=control_background_color
-            )
+        )
 
         magnet_button.image = magnet_image
         magnet_button.place(x=893, y=782)
