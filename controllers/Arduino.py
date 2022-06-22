@@ -33,7 +33,7 @@ class Arduino(Strategy):
                     globalData.electromagnet = int(mensagem_recebida['electromagnet'])
                     globalData.toolPosition = int(mensagem_recebida['toolPosition'])
                 self.threadTryReceive = False
-            time.sleep(1)
+            time.sleep(0.0001)
 
     def rotacionar_torre(self, graus: int) -> bool:
         if graus < -720 or graus > 720 or graus == 0: return False

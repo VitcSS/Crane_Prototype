@@ -25,7 +25,10 @@ if __name__ == "__main__":
         inp = int(input("> "))
         value = 0
         if (inp == 1 or inp == 2 or inp == 5):
-            value = int(input("Insira o valor\n> "))
+            try:
+                value = int(input("Insira o valor\n> "))
+            except:
+                pass
         
         if inp == 1:
             print("Valor: ", value)
