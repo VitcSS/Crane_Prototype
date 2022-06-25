@@ -1,7 +1,7 @@
 from time import sleep
 import tkinter as tk
 from tkinter import font as tkfont
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, IntVar, StringVar
+from tkinter import *
 from tracemalloc import start
 import customtkinter
 from tkinter.messagebox import showinfo
@@ -168,13 +168,17 @@ class GUI001(tk.Frame):
 class GUI002(tk.Frame):
     # l1 = None
     # l2 = None
-    rotation_variable = None
+    rotation_variable = 0
+    distance_variable = -30
+    is_magnet_active = None
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         self.page_build()
-        self.rotation_variable = IntVar()
+        self.rotation_variable = 0
+        self.distance_variable = 0
+        self.is_magnet_active = False
 
     def simulation_click(self, event):
         print(event)
@@ -182,12 +186,30 @@ class GUI002(tk.Frame):
     def popup_showinfo(self):
         showinfo("Window", "Hello World!")
 
-    def rotation_command(self, event):
-        print(event)
+    def rotation_command(self, position):
+        # self.rotation_variable.set(round(position))
+        print(f"Posição atual: {self.rotation_variable}")
 
-    def rotation_entry_callback(self):
-        print(self.rotation_variable.get())
-        return True
+    def distance_command(self, distance):
+        if (distance != 0):
+            self.distance_variable = distance - 30
+
+            self.distance_vertical_metric['text'] = str(round(distance) - 30)
+            self.distance_vertical_metric.update()
+
+        print(f"Posição atual: {self.distance_variable}")
+        
+    def change_magnet_image(self):
+        if self.is_magnet_active == False:
+            self.magnet_button.configure(image=self.active_magnet_image)
+            self.magnet_button.photo = self.active_magnet_image
+            self.magnet_button.image = self.active_magnet_image
+            self.is_magnet_active = True
+        else:
+            self.magnet_button.configure(image=self.off_magnet_image)
+            self.magnet_button.photo = self.off_magnet_image
+            self.magnet_button.image = self.off_magnet_image
+            self.is_magnet_active = False
 
     def page_build(self):
         # Titulo Principal
@@ -199,22 +221,12 @@ class GUI002(tk.Frame):
             font=("Inter Regular", 20))
 
         self.title.place(x=830, y=16, width=260, height=24)
-
-        # Retângulo da telemetria - altura
-        # height_telemetry_image = Image.open(
-        #     relative_to_assets("images/Group 5.png"))
-        # height_telemetry_image = ImageTk.PhotoImage(height_telemetry_image)
-        # height_telemetry_base = tk.Label(
-        #     self,
-        #     image=height_telemetry_image,
-        #     bg=background_color)
-        # height_telemetry_base.image = height_telemetry_image
-        # height_telemetry_base.place(x=1212, y=286)
-
+        
         # Ellipse da telemetria
         self.ellipse_telemetry_image = Image.open(
             relative_to_assets("images/Group 18.png"))
-        self.ellipse_telemetry_image = ImageTk.PhotoImage(self.ellipse_telemetry_image)
+        self.ellipse_telemetry_image = ImageTk.PhotoImage(
+            self.ellipse_telemetry_image)
         self.ellipse_telemetry_base = tk.Label(
             self,
             image=self.ellipse_telemetry_image,
@@ -247,6 +259,28 @@ class GUI002(tk.Frame):
         self.rectangle_7.image = self.rectangle_7_image
         self.rectangle_7.place(x=254, y=758)
 
+        # Seção 2
+        # Botão de play
+        self.send_rotation_image = Image.open(
+            relative_to_assets("images/ButtonPlay.png"))
+        self.send_rotation_image = ImageTk.PhotoImage(self.send_rotation_image)
+        self.send_rotation_button = tk.Button(
+            self,
+            image=self.send_rotation_image,
+            bg=control_background_color,
+            highlightthickness=0,
+            bd=0,
+            activebackground=control_background_color,
+            activeforeground=control_background_color,
+            justify="center",
+            highlightbackground=control_background_color,
+            relief=SUNKEN,
+            width=56,
+            height=56
+        )
+
+        self.send_rotation_button.place(x=1550, y=820)
+
         # Label do controle de rotação
         self.rotation_1_label = tk.Label(
             self,
@@ -254,7 +288,7 @@ class GUI002(tk.Frame):
             foreground=text_color,
             bg=control_background_color,
             font=("Inter Regular", 16))
-        self.rotation_1_label.place(x=1336, y=808, width=90, height=32)
+        self.rotation_1_label.place(x=1280, y=808, width=90, height=32)
 
         # Input do controle de rotação
         self.rotation_canva = customtkinter.CTkFrame(
@@ -266,7 +300,7 @@ class GUI002(tk.Frame):
             border_width=0,
             border_color=control_background_color)
         # frame_1.pack()
-        self.rotation_canva.place(x=1246, y=817)
+        self.rotation_canva.place(x=1188, y=817)
 
         self.rotation_entry = customtkinter.CTkEntry(
             master=self.rotation_canva,
@@ -281,7 +315,7 @@ class GUI002(tk.Frame):
             text_color=text_color,
             textvariable=self.rotation_variable,
             validate="focusout",
-            validatecommand=self.rotation_entry_callback
+            # validatecommand=self.rotation_entry_callback
         )
 
         self.rotation_entry.pack()
@@ -293,7 +327,8 @@ class GUI002(tk.Frame):
             bg=control_background_color,
             font=("Inter Regular", 16))
 
-        self.rotation_metrics_label.place(x=1246, y=842, width=67, height=30)
+        self.rotation_metrics_label.place(x=1188, y=842, width=67, height=30)
+
         # Slider da rotação
         self.rotation_slider = customtkinter.CTkSlider(
             master=self,
@@ -312,24 +347,49 @@ class GUI002(tk.Frame):
             button_corner_radius=100,
             highlightthickness=0,
             corner_radius=0,
-            bd=0
+            bd=0,
+            borderwidth=0,
+            relief=SUNKEN
         )
 
         self.rotation_slider.set(0)
         self.rotation_slider.border_color = "#262626"
-        self.rotation_slider.place(x=1338, y=846)
+        self.rotation_slider.place(x=1280, y=846)
+
+        # Seção 1
+        # Botão que envia a distância
+        self.send_distance_image = Image.open(
+            relative_to_assets("images/ButtonPlay.png"))
+        self.send_distance_image = ImageTk.PhotoImage(self.send_distance_image)
+        self.send_distance_button = tk.Button(
+            self,
+            image=self.send_distance_image,
+            bg=control_background_color,
+            highlightthickness=0,
+            bd=0,
+            activebackground=control_background_color,
+            activeforeground=control_background_color,
+            borderwidth=0,
+            justify="center",
+            highlightbackground=control_background_color,
+            relief=SUNKEN,
+            width=56,
+            height=56
+        )
+
+        self.send_distance_button.place(x=325, y=820)
 
         # Label do controle de distância entre a ferramenta e o objeto
         self.tool_1_label = tk.Label(self, text="Distância", foreground=text_color,
-                                bg=control_background_color, font=("Inter Regular", 16))
-        self.tool_1_label.place(x=436, y=808, width=90, height=32)
+                                     bg=control_background_color, font=("Inter Regular", 16))
+        self.tool_1_label.place(x=400, y=808, width=90, height=32)
 
         # Slider da distância
         self.distance_slider = customtkinter.CTkSlider(
             master=self,
             from_=0,
-            to=1,
-            command=None,
+            to=60,
+            command=self.distance_command,
             width=240,
             height=8,
             fg_color="#666666",
@@ -347,49 +407,42 @@ class GUI002(tk.Frame):
 
         self.distance_slider.set(0)
         self.distance_slider.border_color = "#262626"
-        self.distance_slider.place(x=436, y=846)
+        self.distance_slider.place(x=400, y=846)
 
-        self.distance_canva = customtkinter.CTkFrame(
-            master=self,
-            height=60,
-            width=67,
-            bg_color=control_background_color,
-            fg_color=control_background_color,
-            border_width=0,
-            border_color=control_background_color)
+        # Valor da distância
 
-        self.distance_canva.place(x=345, y=817)
+        self.distance_vertical_metric = tk.Label(
+            self,
+            text=-30,
+            foreground=text_color,
+            bg=control_background_color,
+            font=("Inter Regular", 16))
 
-        self.distance_entry = customtkinter.CTkEntry(
-            master=self.distance_canva,
-            placeholder_text="0",
-            height=30,
-            width=67,
-            border_width=0,
-            border_color=control_background_color,
-            text_font=("Inter Regular", 16),
-            justify="center",
-            fg_color=control_background_color,
-            text_color=text_color)
+        self.distance_vertical_metric.place(x=665, y=812, width=67, height=30)
 
-        self.distance_entry.pack()
-
-        self.rotation_metrics_label = tk.Label(
+        self.distance_metrics_label = tk.Label(
             self,
             text="cm",
             foreground=text_color,
             bg=control_background_color,
             font=("Inter Regular", 16))
 
-        self.rotation_metrics_label.place(x=345, y=842, width=67, height=30)
+        self.distance_metrics_label.place(x=665, y=842, width=67, height=30)
 
         # Botão liga e desliga o ímã
-        self.magnet_image = Image.open(
-            relative_to_assets("images/Group 15.png"))
-        self.magnet_image = ImageTk.PhotoImage(self.magnet_image)
+        self.off_magnet_image = Image.open(
+            relative_to_assets("images/BotaoImaDesligado.png"))
+        
+        self.off_magnet_image = ImageTk.PhotoImage(self.off_magnet_image)
+        
+        self.active_magnet_image = Image.open(
+            relative_to_assets("images/BotaoImaLigado.png"))
+        
+        self.active_magnet_image = ImageTk.PhotoImage(self.active_magnet_image)
+        
         self.magnet_button = tk.Button(
             self,
-            image=self.magnet_image,
+            image=self.off_magnet_image,
             bg=control_background_color,
             highlightthickness=0,
             bd=0,
@@ -397,11 +450,13 @@ class GUI002(tk.Frame):
             activeforeground=control_background_color,
             borderwidth=0,
             justify="center",
-            highlightbackground=control_background_color
+            highlightbackground=control_background_color,
+            command=self.change_magnet_image,
+            # relief=SUNKEN
         )
 
-        self.magnet_button.image = self.magnet_image
-        self.magnet_button.place(x=893, y=782)
+        self.magnet_button.image = self.off_magnet_image
+        self.magnet_button.place(x=894, y=782)
 
 
 if __name__ == "__main__":
