@@ -198,7 +198,7 @@ class GUI002(tk.Frame):
             self.distance_vertical_metric.update()
 
         print(f"Posição atual: {self.distance_variable}")
-        
+
     def change_magnet_image(self):
         if self.is_magnet_active == False:
             self.magnet_button.configure(image=self.active_magnet_image)
@@ -221,7 +221,8 @@ class GUI002(tk.Frame):
             font=("Inter Regular", 20))
 
         self.title.place(x=830, y=16, width=260, height=24)
-        
+
+        # Seção 3
         # Ellipse da telemetria
         self.ellipse_telemetry_image = Image.open(
             relative_to_assets("images/Group 18.png"))
@@ -248,6 +249,81 @@ class GUI002(tk.Frame):
         self.component_1.image = self.component_1_image
         self.component_1.place(x=885, y=305)
 
+        self.ultrasson_meter_label = tk.Label(
+            self,
+            text="Medida do\nUltrassom",
+            foreground=text_color,
+            bg="#4C6CFD",
+            font=("Inter Regular", 20))
+
+        self.ultrasson_meter_label.place(x=322, y=346, width=130, height=72)
+
+        self.actual_position = tk.Label(
+            self,
+            text="Posição\ndo guindaste",
+            foreground=text_color,
+            bg="#4C6CFD",
+            font=("Inter Regular", 20))
+
+        self.actual_position.place(x=1260, y=296, width=165, height=72)
+
+        self.actual_position_value = tk.Label(
+            self,
+            text="0",
+            foreground=text_color,
+            bg="#4C6CFD",
+            font=("Inter Regular", 30))
+
+        self.actual_position_value.place(x=1447, y=302, width=60, height=60)
+
+        self.actual_position_meter = tk.Label(
+            self,
+            text="graus",
+            foreground=text_color,
+            bg="#4C6CFD",
+            font=("Inter Regular", 14))
+
+        self.actual_position_meter.place(x=1515, y=302, width=50, height=60)
+
+        self.actual_position_toy = tk.Label(
+            self,
+            text="Posição\nda ferramenta",
+            foreground=text_color,
+            bg="#4C6CFD",
+            font=("Inter Regular", 20))
+
+        self.actual_position_toy.place(x=1260, y=385, width=178, height=72)
+
+        self.actual_position_toy_value = tk.Label(
+            self,
+            text="-30",
+            foreground=text_color,
+            bg="#4C6CFD",
+            font=("Inter Regular", 30))
+
+        self.actual_position_toy_value.place(
+            x=1447, y=385, width=60, height=60)
+
+        self.actual_position_toy_meter = tk.Label(
+            self,
+            text="cm",
+            foreground=text_color,
+            bg="#4C6CFD",
+            font=("Inter Regular", 14))
+
+        self.actual_position_toy_meter.place(x=1515, y=385, width=50, height=60)
+
+        # Titulo Principal
+        self.title = tk.Label(
+            self,
+            text="Guindaste Simulado",
+            foreground=text_color,
+            bg=background_color,
+            font=("Inter Regular", 20))
+
+        self.title.place(x=830, y=16, width=260, height=24)
+
+        # Seção 2
         # Retângulo dos controles
         self.rectangle_7_image = Image.open(
             relative_to_assets("images/Rectangle 7.png"))
@@ -259,7 +335,6 @@ class GUI002(tk.Frame):
         self.rectangle_7.image = self.rectangle_7_image
         self.rectangle_7.place(x=254, y=758)
 
-        # Seção 2
         # Botão de play
         self.send_rotation_image = Image.open(
             relative_to_assets("images/ButtonPlay.png"))
@@ -432,14 +507,14 @@ class GUI002(tk.Frame):
         # Botão liga e desliga o ímã
         self.off_magnet_image = Image.open(
             relative_to_assets("images/BotaoImaDesligado.png"))
-        
+
         self.off_magnet_image = ImageTk.PhotoImage(self.off_magnet_image)
-        
+
         self.active_magnet_image = Image.open(
             relative_to_assets("images/BotaoImaLigado.png"))
-        
+
         self.active_magnet_image = ImageTk.PhotoImage(self.active_magnet_image)
-        
+
         self.magnet_button = tk.Button(
             self,
             image=self.off_magnet_image,
