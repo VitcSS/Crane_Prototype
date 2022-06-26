@@ -1,3 +1,4 @@
+from math import ceil
 from time import sleep
 import tkinter as tk
 from tkinter import font as tkfont
@@ -171,13 +172,15 @@ class GUI002(tk.Frame):
     rotation_variable = 0
     distance_variable = -30
     is_magnet_active = None
+    rotation = 0
+    toy_distance = -30
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         self.page_build()
         self.rotation_variable = 0
-        self.distance_variable = 0
+        self.distance_variable = -30
         self.is_magnet_active = False
 
     def simulation_click(self, event):
@@ -187,14 +190,18 @@ class GUI002(tk.Frame):
         showinfo("Window", "Hello World!")
 
     def rotation_command(self, position):
-        # self.rotation_variable.set(round(position))
-        print(f"Posição atual: {self.rotation_variable}")
+        self.rotation_variable = int(round(position, 0))
+        self.rotation_metric['text'] = str(
+            int(round(position, 0)))
+        self.rotation_metric.update()
+
+        print(f"Posição atual: {self.distance_variable}")
 
     def distance_command(self, distance):
         if (distance != 0):
-            self.distance_variable = distance - 30
-
-            self.distance_vertical_metric['text'] = str(round(distance) - 30)
+            self.distance_variable = int(round(distance, 0) - 30)
+            self.distance_vertical_metric['text'] = str(
+                int(round(distance, 0) - 30))
             self.distance_vertical_metric.update()
 
         print(f"Posição atual: {self.distance_variable}")
@@ -210,6 +217,19 @@ class GUI002(tk.Frame):
             self.magnet_button.photo = self.off_magnet_image
             self.magnet_button.image = self.off_magnet_image
             self.is_magnet_active = False
+
+    def send_rotation_command(self):
+        print(f"received postion: {int(round(self.rotation_variable, 0))}")
+        self.rotation = int(round(self.rotation_variable, 0))
+        self.actual_position_value['text'] = str(self.rotation)
+        self.actual_position_value.update()
+
+    def send_toy_distance_command(self):
+        print(f"received toy distance: {round(self.distance_variable, 0)}")
+        self.toy_distance = int(round(self.distance_variable, 0))
+        self.actual_position_toy_value['text'] = str(
+            int(round(self.toy_distance, 0)))
+        self.actual_position_toy_value.update()
 
     def page_build(self):
         # Titulo Principal
@@ -274,7 +294,7 @@ class GUI002(tk.Frame):
             bg="#4C6CFD",
             font=("Inter Regular", 30))
 
-        self.actual_position_value.place(x=1447, y=302, width=60, height=60)
+        self.actual_position_value.place(x=1447, y=302, width=62, height=60)
 
         self.actual_position_meter = tk.Label(
             self,
@@ -311,7 +331,8 @@ class GUI002(tk.Frame):
             bg="#4C6CFD",
             font=("Inter Regular", 14))
 
-        self.actual_position_toy_meter.place(x=1515, y=385, width=50, height=60)
+        self.actual_position_toy_meter.place(
+            x=1515, y=385, width=50, height=60)
 
         # Titulo Principal
         self.title = tk.Label(
@@ -351,7 +372,8 @@ class GUI002(tk.Frame):
             highlightbackground=control_background_color,
             relief=SUNKEN,
             width=56,
-            height=56
+            height=56,
+            command=self.send_rotation_command
         )
 
         self.send_rotation_button.place(x=1550, y=820)
@@ -365,35 +387,14 @@ class GUI002(tk.Frame):
             font=("Inter Regular", 16))
         self.rotation_1_label.place(x=1280, y=808, width=90, height=32)
 
-        # Input do controle de rotação
-        self.rotation_canva = customtkinter.CTkFrame(
-            master=self,
-            height=60,
-            width=67,
-            bg_color=control_background_color,
-            fg_color=control_background_color,
-            border_width=0,
-            border_color=control_background_color)
-        # frame_1.pack()
-        self.rotation_canva.place(x=1188, y=817)
+        self.rotation_metric = tk.Label(
+            self,
+            text=self.rotation_variable,
+            foreground=text_color,
+            bg=control_background_color,
+            font=("Inter Regular", 16))
 
-        self.rotation_entry = customtkinter.CTkEntry(
-            master=self.rotation_canva,
-            placeholder_text="0",
-            height=30,
-            width=67,
-            border_width=0,
-            border_color=control_background_color,
-            text_font=("Inter Regular", 16),
-            justify="center",
-            fg_color=control_background_color,
-            text_color=text_color,
-            textvariable=self.rotation_variable,
-            validate="focusout",
-            # validatecommand=self.rotation_entry_callback
-        )
-
-        self.rotation_entry.pack()
+        self.rotation_metric.place(x=1175, y=812, width=90, height=32)
 
         self.rotation_metrics_label = tk.Label(
             self,
@@ -449,7 +450,8 @@ class GUI002(tk.Frame):
             highlightbackground=control_background_color,
             relief=SUNKEN,
             width=56,
-            height=56
+            height=56,
+            command=self.send_toy_distance_command
         )
 
         self.send_distance_button.place(x=325, y=820)
