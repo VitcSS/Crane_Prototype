@@ -1,7 +1,8 @@
+from math import ceil
 from time import sleep
 import tkinter as tk
 from tkinter import font as tkfont
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, IntVar, StringVar
+from tkinter import *
 from tracemalloc import start
 import customtkinter
 from tkinter.messagebox import showinfo
@@ -21,11 +22,6 @@ from libs.Screen import center
 background_color = "#121212"
 control_background_color = "#262626"
 text_color = "#F0F0F3"
-transparent_color = "#915f07"
-buttonbackground_color = "#003333"
-buttonActivebackground_color = "#669999"
-
-evt = threading.Event()
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets")
@@ -33,30 +29,6 @@ ASSETS_PATH = OUTPUT_PATH / Path("./assets")
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
-
-
-def setBackgroundLabel(parent, BackGroundType=None):
-    """Place background image on a label"""
-
-    mySelfParent = parent
-
-    if BackGroundType is not None:
-        print(BackGroundType)
-    BackGroundImage = Image.open(relative_to_assets("backgrond.png"))
-
-    BackGroundImage = ImageTk.PhotoImage(BackGroundImage)
-    background_label = tk.Label(
-        parent, image=BackGroundImage, background=background_color)
-    background_label.place(relx=0, y=0, relheight=1, relwidth=1)
-    parent.img = BackGroundImage
-
-
-def measureslog(string):
-    log = open("log_measures.txt", "a")
-    Day = time.strftime("%m-%d-%Y", time.localtime())
-    Time = time.strftime("%I:%M:%S %p", time.localtime())
-    log.write(Day+"\t\t"+Time+"\t\t"+string+"\n")
-    log.close()
 
 
 class TkThread(threading.Thread):
@@ -74,14 +46,11 @@ class TkThread(threading.Thread):
         y_cordinate = int((screen_height/2) - (window_height/2))
 
         self.root.protocol("WM_DELETE_WINDOW", self.exit_callback)
-        # self.root.overrideredirect(True)
         self.root.geometry("{}x{}+{}+{}".format(window_width,
                            window_height, x_cordinate, y_cordinate))
-        # self.root.attributes("-fullscreen", True)
-
-        # self.root.geometry("{0}x{1}+0+0".format(str(scr_w),str(scr_h)))
 
         self.frames = {}
+
         for F in (GUI001, GUI001, GUI002):
             page_name = F.__name__
             frame = F(parent=self.root, controller=self)
@@ -90,11 +59,7 @@ class TkThread(threading.Thread):
             self.frames[page_name] = frame
             frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 
-            # exitButton = tk.Button(self.frames[page_name], bg=buttonbackground_color, activebackground=buttonActivebackground_color, fg="white", font=("Helvetica", 20, "bold"), \
-            # justify="center", text="X", command= self.exit_callback)
-            # exitButton.place(relx=0.95, rely=0.05, anchor="center")
-
-        # start page
+        # Página inicial
         self.root.configure(background=background_color)
         self.show_frame("GUI001")
         self.select_page()
@@ -131,20 +96,18 @@ class GUI001(tk.Frame):
         self.controller = controller
         self.page_build()
 
-    def simulation_click(self, event):
-        print(event)
+    def select_simulation_page(self, event):
+        globalData.tela_selecionada = "GUI002"
+
+    def select_physical_page(self, event):
         globalData.tela_selecionada = "GUI002"
 
     def page_build(self):
         # Titulo Principal
-        # title = tk.Label(self, text= "QUAL GUINDASTE VOCÊ DESEJA CONTROLAR?", foreground="#313B3F", bg=background_color, font=("Inter Regular", 28))
-        # title.place(x=280, y=40, width=890, height=130)
-
-        # Titulo Principal
         title = tk.Label(self, text="Simulação", foreground=text_color,
                          bg=background_color, font=("Inter Regular", 64))
         title.place(x=162, y=488, width=465, height=90)
-        title.bind("<Button-1>", self.simulation_click)
+        title.bind("<Button-1>", self.select_simulation_page)
 
         # Subtitulo
         subTitle = tk.Label(self, text="Clique para começar com o Copelia",
@@ -155,150 +118,264 @@ class GUI001(tk.Frame):
         title = tk.Label(self, text="Físico", foreground=text_color,
                          bg=background_color, font=("Inter Regular", 64))
         title.place(x=1293, y=488, width=465, height=90)
+        title.bind("<Button-1>", self.select_simulation_page)
 
         # Subtitulo
         subTitle = tk.Label(self, text="Clique para começar com o Arduino",
                             foreground=text_color, bg=background_color, font=("Inter Regular", 16))
         subTitle.place(x=1293, y=598, width=465, height=24)
 
-        # Divisor
-        # divisor = tk.Label(self, text= "", foreground="#313B3F", bg=background_color, font=("Inter Regular", 1), borderwidth=0.5, relief="solid")
-        # divisor.place(x=724, y=504, width=2, height=240)
-
 
 class GUI002(tk.Frame):
     # l1 = None
     # l2 = None
-    rotation_variable = None
+    rotation_variable = 0
+    distance_variable = -30
+    is_magnet_active = None
+    rotation = 0
+    toy_distance = -30
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         self.page_build()
-        self.rotation_variable = IntVar()
-
-    def simulation_click(self, event):
-        print(event)
+        self.rotation_variable = 0
+        self.distance_variable = -30
+        self.is_magnet_active = False
 
     def popup_showinfo(self):
         showinfo("Window", "Hello World!")
 
-    def rotation_command(self, event):
-        print(event)
+    def rotation_command(self, position):
+        self.rotation_variable = int(round(position, 0))
+        self.rotation_metric['text'] = str(
+            int(round(position, 0)))
+        self.rotation_metric.update()
 
-    def rotation_entry_callback(self):
-        print(self.rotation_variable.get())
-        return True
+    def distance_command(self, distance):
+        if (distance != 0):
+            self.distance_variable = int(round(distance, 0) - 30)
+            self.distance_vertical_metric['text'] = str(
+                int(round(distance, 0) - 30))
+            self.distance_vertical_metric.update()
+
+    def change_magnet_image(self):
+        if self.is_magnet_active == False:
+            self.magnet_button.configure(image=self.active_magnet_image)
+            self.magnet_button.photo = self.active_magnet_image
+            self.magnet_button.image = self.active_magnet_image
+            self.is_magnet_active = True
+        else:
+            self.magnet_button.configure(image=self.off_magnet_image)
+            self.magnet_button.photo = self.off_magnet_image
+            self.magnet_button.image = self.off_magnet_image
+            self.is_magnet_active = False
+
+    def send_rotation_command(self):
+        self.rotation = int(round(self.rotation_variable, 0))
+        self.actual_position_value['text'] = str(self.rotation)
+        self.actual_position_value.update()
+
+    def send_toy_distance_command(self):
+        self.toy_distance = int(round(self.distance_variable, 0))
+        self.actual_position_toy_value['text'] = str(
+            int(round(self.toy_distance, 0)))
+        self.actual_position_toy_value.update()
 
     def page_build(self):
         # Titulo Principal
-        title = tk.Label(
+        self.title = tk.Label(
             self,
             text="Guindaste Simulado",
             foreground=text_color,
             bg=background_color,
             font=("Inter Regular", 20))
 
-        title.place(x=830, y=16, width=260, height=24)
+        self.title.place(x=830, y=16, width=260, height=24)
 
+        # Seção 3
         # Ellipse da telemetria
-        ellipse_telemetry_image = Image.open(
-            relative_to_assets("images/Ellipse 15.png"))
-        ellipse_telemetry_image = ImageTk.PhotoImage(ellipse_telemetry_image)
-        ellipse_telemetry_base = tk.Label(
+        self.ellipse_telemetry_image = Image.open(
+            relative_to_assets("images/Group 18.png"))
+        self.ellipse_telemetry_image = ImageTk.PhotoImage(
+            self.ellipse_telemetry_image)
+        self.ellipse_telemetry_base = tk.Label(
             self,
-            image=ellipse_telemetry_image,
+            image=self.ellipse_telemetry_image,
             bg=background_color)
-        ellipse_telemetry_base.image = ellipse_telemetry_image
-        ellipse_telemetry_base.place(x=682, y=104)
+        self.ellipse_telemetry_base.image = self.ellipse_telemetry_image
+        self.ellipse_telemetry_base.place(x=278, y=104)
 
         # Espaço da imagem
-        component_1_image = Image.open(
+        self.component_1_image = Image.open(
             relative_to_assets("images/Component 1.png"))
-        component_1_image = ImageTk.PhotoImage(component_1_image)
-        component_1 = tk.Label(
+        self.component_1_image = ImageTk.PhotoImage(self.component_1_image)
+        self.component_1 = tk.Label(
             self,
-            width=510,
-            height=510,
-            background=background_color,
-            foreground=background_color,
-            activebackground=background_color,
-            image=component_1_image,
-            bg=background_color)
-        component_1.image = component_1_image
-        component_1.place(x=701, y=123)
+            width=143,
+            height=143,
+            image=self.component_1_image,
+            bg="#D9D9D9")
 
+        self.component_1.image = self.component_1_image
+        self.component_1.place(x=885, y=305)
+
+        self.ultrasson_meter_label = tk.Label(
+            self,
+            text="Medida do\nUltrassom",
+            foreground=text_color,
+            bg="#4C6CFD",
+            font=("Inter Regular", 20))
+
+        self.ultrasson_meter_label.place(x=322, y=346, width=130, height=72)
+
+        self.ultrasson_meter_value = tk.Label(
+            self,
+            text="0",
+            foreground=text_color,
+            bg="#4C6CFD",
+            font=("Inter Regular", 30))
+
+        self.ultrasson_meter_value.place(x=509, y=352, width=62, height=60)
+
+        self.ultrasson_meter_unit_meter = tk.Label(
+            self,
+            text="cm",
+            foreground=text_color,
+            bg="#4C6CFD",
+            font=("Inter Regular", 14))
+
+        self.ultrasson_meter_unit_meter.place(x=577, y=352, width=50, height=60)
+
+        self.actual_position = tk.Label(
+            self,
+            text="Posição\ndo guindaste",
+            foreground=text_color,
+            bg="#4C6CFD",
+            font=("Inter Regular", 20))
+
+        self.actual_position.place(x=1260, y=296, width=165, height=72)
+
+        self.actual_position_value = tk.Label(
+            self,
+            text="0",
+            foreground=text_color,
+            bg="#4C6CFD",
+            font=("Inter Regular", 30))
+
+        self.actual_position_value.place(x=1447, y=302, width=62, height=60)
+
+        self.actual_position_unit_meter = tk.Label(
+            self,
+            text="graus",
+            foreground=text_color,
+            bg="#4C6CFD",
+            font=("Inter Regular", 14))
+
+        self.actual_position_unit_meter.place(x=1515, y=302, width=50, height=60)
+
+        self.actual_position_toy = tk.Label(
+            self,
+            text="Posição\nda ferramenta",
+            foreground=text_color,
+            bg="#4C6CFD",
+            font=("Inter Regular", 20))
+
+        self.actual_position_toy.place(x=1260, y=385, width=178, height=72)
+
+        self.actual_position_toy_value = tk.Label(
+            self,
+            text="-30",
+            foreground=text_color,
+            bg="#4C6CFD",
+            font=("Inter Regular", 30))
+
+        self.actual_position_toy_value.place(
+            x=1447, y=385, width=60, height=60)
+
+        self.actual_position_toy_unit_meter = tk.Label(
+            self,
+            text="cm",
+            foreground=text_color,
+            bg="#4C6CFD",
+            font=("Inter Regular", 14))
+
+        self.actual_position_toy_unit_meter.place(
+            x=1515, y=385, width=50, height=60)
+
+        # Titulo Principal
+        self.title = tk.Label(
+            self,
+            text="Guindaste Simulado",
+            foreground=text_color,
+            bg=background_color,
+            font=("Inter Regular", 20))
+
+        self.title.place(x=830, y=16, width=260, height=24)
+
+        # Seção 2
         # Retângulo dos controles
-        rectangle_7_image = Image.open(
+        self.rectangle_7_image = Image.open(
             relative_to_assets("images/Rectangle 7.png"))
-        rectangle_7_image = ImageTk.PhotoImage(rectangle_7_image)
-        rectangle_7 = tk.Label(
+        self.rectangle_7_image = ImageTk.PhotoImage(self.rectangle_7_image)
+        self.rectangle_7 = tk.Label(
             self,
-            image=rectangle_7_image,
+            image=self.rectangle_7_image,
             bg=background_color)
-        rectangle_7.image = rectangle_7_image
-        rectangle_7.place(x=254, y=758)
+        self.rectangle_7.image = self.rectangle_7_image
+        self.rectangle_7.place(x=254, y=758)
 
-        # Retângulo da telemetria - altura
-        height_telemetry_image = Image.open(
-            relative_to_assets("images/Group 5.png"))
-        height_telemetry_image = ImageTk.PhotoImage(height_telemetry_image)
-        height_telemetry_base = tk.Label(
+        # Botão de play
+        self.send_rotation_image = Image.open(
+            relative_to_assets("images/ButtonPlay.png"))
+        self.send_rotation_image = ImageTk.PhotoImage(self.send_rotation_image)
+        self.send_rotation_button = tk.Button(
             self,
-            image=height_telemetry_image,
-            bg=background_color)
-        height_telemetry_base.image = height_telemetry_image
-        height_telemetry_base.place(x=1212, y=286)
+            image=self.send_rotation_image,
+            bg=control_background_color,
+            highlightthickness=0,
+            bd=0,
+            activebackground=control_background_color,
+            activeforeground=control_background_color,
+            justify="center",
+            highlightbackground=control_background_color,
+            relief=SUNKEN,
+            width=56,
+            height=56,
+            command=self.send_rotation_command
+        )
+
+        self.send_rotation_button.place(x=1550, y=820)
 
         # Label do controle de rotação
-        rotation_1_label = tk.Label(
+        self.rotation_1_label = tk.Label(
             self,
             text="Rotação",
             foreground=text_color,
             bg=control_background_color,
             font=("Inter Regular", 16))
-        rotation_1_label.place(x=1336, y=808, width=90, height=32)
+        self.rotation_1_label.place(x=1280, y=808, width=90, height=32)
 
-        # Input do controle de rotação
-        rotation_canva = customtkinter.CTkFrame(
-            master=self,
-            height=60,
-            width=67,
-            bg_color=control_background_color,
-            fg_color=control_background_color,
-            border_width=0,
-            border_color=control_background_color)
-        # frame_1.pack()
-        rotation_canva.place(x=1246, y=817)
+        self.rotation_metric = tk.Label(
+            self,
+            text=self.rotation_variable,
+            foreground=text_color,
+            bg=control_background_color,
+            font=("Inter Regular", 16))
 
-        rotation_entry = customtkinter.CTkEntry(
-            master=rotation_canva,
-            placeholder_text="0",
-            height=30,
-            width=67,
-            border_width=0,
-            border_color=control_background_color,
-            text_font=("Inter Regular", 16),
-            justify="center",
-            fg_color=control_background_color,
-            text_color=text_color,
-            textvariable=self.rotation_variable,
-            validate="focusout",
-            validatecommand=self.rotation_entry_callback
-        )
+        self.rotation_metric.place(x=1175, y=812, width=90, height=32)
 
-        rotation_entry.pack()
-
-        rotation_metrics_label = tk.Label(
+        self.rotation_metrics_label = tk.Label(
             self,
             text="graus",
             foreground=text_color,
             bg=control_background_color,
             font=("Inter Regular", 16))
 
-        rotation_metrics_label.place(x=1246, y=842, width=67, height=30)
+        self.rotation_metrics_label.place(x=1188, y=842, width=67, height=30)
+
         # Slider da rotação
-        rotation_slider = customtkinter.CTkSlider(
+        self.rotation_slider = customtkinter.CTkSlider(
             master=self,
             from_=0,
             to=360,
@@ -315,24 +392,50 @@ class GUI002(tk.Frame):
             button_corner_radius=100,
             highlightthickness=0,
             corner_radius=0,
-            bd=0
+            bd=0,
+            borderwidth=0,
+            relief=SUNKEN
         )
 
-        rotation_slider.set(0)
-        rotation_slider.border_color = "#262626"
-        rotation_slider.place(x=1338, y=846)
+        self.rotation_slider.set(0)
+        self.rotation_slider.border_color = "#262626"
+        self.rotation_slider.place(x=1280, y=846)
+
+        # Seção 1
+        # Botão que envia a distância
+        self.send_distance_image = Image.open(
+            relative_to_assets("images/ButtonPlay.png"))
+        self.send_distance_image = ImageTk.PhotoImage(self.send_distance_image)
+        self.send_distance_button = tk.Button(
+            self,
+            image=self.send_distance_image,
+            bg=control_background_color,
+            highlightthickness=0,
+            bd=0,
+            activebackground=control_background_color,
+            activeforeground=control_background_color,
+            borderwidth=0,
+            justify="center",
+            highlightbackground=control_background_color,
+            relief=SUNKEN,
+            width=56,
+            height=56,
+            command=self.send_toy_distance_command
+        )
+
+        self.send_distance_button.place(x=325, y=820)
 
         # Label do controle de distância entre a ferramenta e o objeto
-        tool_1_label = tk.Label(self, text="Distância", foreground=text_color,
-                                bg=control_background_color, font=("Inter Regular", 16))
-        tool_1_label.place(x=436, y=808, width=90, height=32)
+        self.tool_1_label = tk.Label(self, text="Distância", foreground=text_color,
+                                     bg=control_background_color, font=("Inter Regular", 16))
+        self.tool_1_label.place(x=400, y=808, width=90, height=32)
 
         # Slider da distância
-        distance_slider = customtkinter.CTkSlider(
+        self.distance_slider = customtkinter.CTkSlider(
             master=self,
             from_=0,
-            to=1,
-            command=None,
+            to=60,
+            command=self.distance_command,
             width=240,
             height=8,
             fg_color="#666666",
@@ -348,51 +451,44 @@ class GUI002(tk.Frame):
             bd=0
         )
 
-        distance_slider.set(0)
-        distance_slider.border_color = "#262626"
-        distance_slider.place(x=436, y=846)
+        self.distance_slider.set(0)
+        self.distance_slider.border_color = "#262626"
+        self.distance_slider.place(x=400, y=846)
 
-        distance_canva = customtkinter.CTkFrame(
-            master=self,
-            height=60,
-            width=67,
-            bg_color=control_background_color,
-            fg_color=control_background_color,
-            border_width=0,
-            border_color=control_background_color)
-        # frame_1.pack()
-        distance_canva.place(x=345, y=817)
+        # Valor da distância
 
-        distance_entry = customtkinter.CTkEntry(
-            master=distance_canva,
-            placeholder_text="0",
-            height=30,
-            width=67,
-            border_width=0,
-            border_color=control_background_color,
-            text_font=("Inter Regular", 16),
-            justify="center",
-            fg_color=control_background_color,
-            text_color=text_color)
+        self.distance_vertical_metric = tk.Label(
+            self,
+            text=-30,
+            foreground=text_color,
+            bg=control_background_color,
+            font=("Inter Regular", 16))
 
-        distance_entry.pack()
+        self.distance_vertical_metric.place(x=665, y=812, width=67, height=30)
 
-        rotation_metrics_label = tk.Label(
+        self.distance_metrics_label = tk.Label(
             self,
             text="cm",
             foreground=text_color,
             bg=control_background_color,
             font=("Inter Regular", 16))
 
-        rotation_metrics_label.place(x=345, y=842, width=67, height=30)
+        self.distance_metrics_label.place(x=665, y=842, width=67, height=30)
 
         # Botão liga e desliga o ímã
-        magnet_image = Image.open(
-            relative_to_assets("images/Group 15.png"))
-        magnet_image = ImageTk.PhotoImage(magnet_image)
-        magnet_button = tk.Button(
+        self.off_magnet_image = Image.open(
+            relative_to_assets("images/BotaoImaDesligado.png"))
+
+        self.off_magnet_image = ImageTk.PhotoImage(self.off_magnet_image)
+
+        self.active_magnet_image = Image.open(
+            relative_to_assets("images/BotaoImaLigado.png"))
+
+        self.active_magnet_image = ImageTk.PhotoImage(self.active_magnet_image)
+
+        self.magnet_button = tk.Button(
             self,
-            image=magnet_image,
+            image=self.off_magnet_image,
             bg=control_background_color,
             highlightthickness=0,
             bd=0,
@@ -400,11 +496,13 @@ class GUI002(tk.Frame):
             activeforeground=control_background_color,
             borderwidth=0,
             justify="center",
-            highlightbackground=control_background_color
+            highlightbackground=control_background_color,
+            command=self.change_magnet_image,
+            # relief=SUNKEN
         )
 
-        magnet_button.image = magnet_image
-        magnet_button.place(x=893, y=782)
+        self.magnet_button.image = self.off_magnet_image
+        self.magnet_button.place(x=894, y=782)
 
 
 if __name__ == "__main__":
