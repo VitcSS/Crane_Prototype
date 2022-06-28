@@ -130,7 +130,7 @@ class GUI002(tk.Frame):
     # l1 = None
     # l2 = None
     rotation_variable = 0
-    distance_variable = -30
+    distance_variable = 0
     is_magnet_active = None
     rotation = 0
     toy_distance = -30
@@ -140,7 +140,7 @@ class GUI002(tk.Frame):
         self.controller = controller
         self.page_build()
         self.rotation_variable = 0
-        self.distance_variable = -30
+        self.distance_variable = 0
         self.is_magnet_active = False
 
     def popup_showinfo(self):
@@ -153,10 +153,10 @@ class GUI002(tk.Frame):
         self.rotation_metric.update()
 
     def distance_command(self, distance):
-        if (distance != 0):
-            self.distance_variable = int(round(distance, 0) - 30)
+        if (distance):
+            self.distance_variable = int(round(distance, 0))
             self.distance_vertical_metric['text'] = str(
-                int(round(distance, 0) - 30))
+                int(round(distance, 0)))
             self.distance_vertical_metric.update()
 
     def change_magnet_image(self):
@@ -263,7 +263,7 @@ class GUI002(tk.Frame):
             bg="#4C6CFD",
             font=("Inter Regular", 30))
 
-        self.actual_position_value.place(x=1447, y=302, width=62, height=60)
+        self.actual_position_value.place(x=1447, y=302, width=80, height=60)
 
         self.actual_position_unit_meter = tk.Label(
             self,
@@ -272,7 +272,7 @@ class GUI002(tk.Frame):
             bg="#4C6CFD",
             font=("Inter Regular", 14))
 
-        self.actual_position_unit_meter.place(x=1515, y=302, width=50, height=60)
+        self.actual_position_unit_meter.place(x=1530, y=302, width=50, height=60)
 
         self.actual_position_toy = tk.Label(
             self,
@@ -285,7 +285,7 @@ class GUI002(tk.Frame):
 
         self.actual_position_toy_value = tk.Label(
             self,
-            text="-30",
+            text="0",
             foreground=text_color,
             bg="#4C6CFD",
             font=("Inter Regular", 30))
@@ -301,7 +301,7 @@ class GUI002(tk.Frame):
             font=("Inter Regular", 14))
 
         self.actual_position_toy_unit_meter.place(
-            x=1515, y=385, width=50, height=60)
+            x=1530, y=385, width=50, height=60)
 
         # Titulo Principal
         self.title = tk.Label(
@@ -377,7 +377,7 @@ class GUI002(tk.Frame):
         # Slider da rotação
         self.rotation_slider = customtkinter.CTkSlider(
             master=self,
-            from_=0,
+            from_=-360,
             to=360,
             command=self.rotation_command,
             width=240,
@@ -433,8 +433,8 @@ class GUI002(tk.Frame):
         # Slider da distância
         self.distance_slider = customtkinter.CTkSlider(
             master=self,
-            from_=0,
-            to=60,
+            from_=-30,
+            to=30,
             command=self.distance_command,
             width=240,
             height=8,
@@ -459,7 +459,7 @@ class GUI002(tk.Frame):
 
         self.distance_vertical_metric = tk.Label(
             self,
-            text=-30,
+            text=0,
             foreground=text_color,
             bg=control_background_color,
             font=("Inter Regular", 16))
