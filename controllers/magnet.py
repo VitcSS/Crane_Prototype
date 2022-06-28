@@ -1,5 +1,5 @@
-from object import object
-from sensors import proximity
+from controllers.object import object
+from controllers.sensors import proximity
 
 class Magnet(object):
     def __init__(self, fantasy_name : str = '/Link',Field : str = '/Field',sim=None):

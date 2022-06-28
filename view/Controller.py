@@ -174,17 +174,25 @@ class GUI002(tk.Frame):
             self.magnet_button.photo = self.off_magnet_image
             self.magnet_button.image = self.off_magnet_image
             self.is_magnet_active = False
+        
+        globalData.dataInput = 'atuar_ferramenta'
+        globalData.dataInput2 = self.is_magnet_active
 
     def send_rotation_command(self):
+        print("CLICADO ROTACAO")
         self.rotation = int(round(self.rotation_variable, 0))
         self.actual_position_value['text'] = str(self.rotation)
         self.actual_position_value.update()
+        globalData.dataInput = 'rotacionar_torre'
+        globalData.dataInput2 = self.rotation
 
     def send_toy_distance_command(self):
         self.toy_distance = int(round(self.distance_variable, 0))
         self.actual_position_toy_value['text'] = str(
             int(round(self.toy_distance, 0)))
         self.actual_position_toy_value.update()
+        globalData.dataInput = 'mover_ferramenta'
+        globalData.dataInput2 = self.toy_distance
 
     def page_build(self):
         # Titulo Principal
