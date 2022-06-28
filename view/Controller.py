@@ -97,10 +97,14 @@ class GUI001(tk.Frame):
         self.page_build()
 
     def select_simulation_page(self, event):
-        globalData.tela_selecionada = "GUI002"
+        globalData.dataInput = 'copelia'
+        globalData.eventos.set()
+        # globalData.tela_selecionada = "GUI002"
 
     def select_physical_page(self, event):
-        globalData.tela_selecionada = "GUI002"
+        globalData.dataInput = 'arduino'
+        globalData.eventos.set()
+        # globalData.tela_selecionada = "GUI002"
 
     def page_build(self):
         # Titulo Principal
