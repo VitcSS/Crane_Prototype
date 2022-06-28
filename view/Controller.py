@@ -96,10 +96,10 @@ class GUI001(tk.Frame):
         self.controller = controller
         self.page_build()
 
-    def select_simulation_page(self):
+    def select_simulation_page(self, event):
         globalData.tela_selecionada = "GUI002"
 
-    def select_physical_page(self):
+    def select_physical_page(self, event):
         globalData.tela_selecionada = "GUI002"
 
     def page_build(self):
