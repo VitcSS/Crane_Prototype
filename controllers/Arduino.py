@@ -53,7 +53,13 @@ class Arduino(Strategy):
         self.inicializa_serial()
         while 1:
             if not self.pauseThread:
-                self.valor_sensores()
+                mensagem_recebida = self.valor_sensores()
+                if 'distanceTool' in mensagem_recebida and 'towerPosition' in mensagem_recebida and 'electromagnet' in mensagem_recebida and 'toolPosition' in mensagem_recebida:
+                    print("Recebi coisas thread_solicita_atualiza_telemetria: ", mensagem_recebida)
+                    globalData.distanceTool = int(mensagem_recebida['distanceTool'])
+                    globalData.towerPosition = int(mensagem_recebida['towerPosition'])
+                    globalData.electromagnet = int(mensagem_recebida['electromagnet'])
+                    globalData.toolPosition = int(mensagem_recebida['toolPosition'])
                 time.sleep(3)
             time.sleep(0.0001)
 

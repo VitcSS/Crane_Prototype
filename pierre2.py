@@ -1,6 +1,6 @@
 from controllers.Strategy import Context
 from controllers.Arduino import Arduino
-from controllers.Copelia import Copelia
+# from controllers.Copelia import Copelia
 
 import threading
 import time

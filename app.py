@@ -48,19 +48,26 @@ if __name__ == "__main__":
         if stateFsm == 3:
             print("ARDUINO")
             globalData.tela_selecionada = "GUI002"
+            interface.rotacionar_torre(0)
             while 1:
                 if globalData.dataInput == 'rotacionar_torre':
                     print("ROTACIONA")
                     globalData.dataInput = None
                     interface.rotacionar_torre(globalData.dataInput2)
                     globalData.dataInput2 = None
-                    time.sleep(2)
+                    time.sleep(0.5)
                 if globalData.dataInput == 'mover_ferramenta':
                     print("MOVER FERRAMENTA")
                     globalData.dataInput = None
+                    interface.mover_ferramenta(globalData.dataInput2)
+                    globalData.dataInput2 = None
+                    time.sleep(0.5)
                 if globalData.dataInput == 'atuar_ferramenta':
                     print("ATUAR FERRAMENTA")
                     globalData.dataInput = None
+                    interface.atuar_ferramenta(globalData.dataInput2)
+                    globalData.dataInput2 = None
+                    time.sleep(0.5)
                 time.sleep(0.00001)
 
                 

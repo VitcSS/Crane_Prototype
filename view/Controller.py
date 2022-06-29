@@ -73,6 +73,10 @@ class TkThread(threading.Thread):
         if page_name == 'TELA':
             self.frames[page_name].METODO_DE_ATUALIZACAO()
         '''
+
+        if page_name == 'GUI002':
+            self.frames[page_name].update_telemetry()
+
         self.show_frame(page_name)
         self.root.after(400, self.select_page)
 
@@ -122,7 +126,7 @@ class GUI001(tk.Frame):
         title = tk.Label(self, text='Físico', foreground=text_color,
                          bg=background_color, font=('Inter Regular', 64))
         title.place(x=1293, y=488, width=465, height=90)
-        title.bind('<Button-1>', self.select_simulation_page)
+        title.bind('<Button-1>', self.select_physical_page)
 
         # Subtitulo
         subTitle = tk.Label(self, text='Clique para começar com o Arduino',
@@ -181,18 +185,24 @@ class GUI002(tk.Frame):
     def send_rotation_command(self):
         print("CLICADO ROTACAO")
         self.rotation = int(round(self.rotation_variable, 0))
-        self.actual_position_value['text'] = str(self.rotation)
-        self.actual_position_value.update()
+        # self.actual_position_value['text'] = str(self.rotation)
+        # self.actual_position_value.update()
         globalData.dataInput = 'rotacionar_torre'
         globalData.dataInput2 = self.rotation
 
     def send_toy_distance_command(self):
         self.toy_distance = int(round(self.distance_variable, 0))
-        self.actual_position_toy_value['text'] = str(
-            int(round(self.toy_distance, 0)))
-        self.actual_position_toy_value.update()
+        # self.actual_position_toy_value['text'] = str(
+        #     int(round(self.toy_distance, 0)))
+        # self.actual_position_toy_value.update()
         globalData.dataInput = 'mover_ferramenta'
         globalData.dataInput2 = self.toy_distance
+
+    def update_telemetry(self):
+        self.ultrasson_meter_value['text'] = str(globalData.distanceTool)
+        self.actual_position_value['text'] = str(globalData.towerPosition)
+        self.actual_position_toy_value['text'] = str(globalData.toolPosition)
+
 
     def page_build(self):
         # Titulo Principal
@@ -389,8 +399,8 @@ class GUI002(tk.Frame):
         # Slider da rotação
         self.rotation_slider = customtkinter.CTkSlider(
             master=self,
-            from_=-360,
-            to=360,
+            from_=-180,
+            to=180,
             command=self.rotation_command,
             width=240,
             height=8,
@@ -445,8 +455,8 @@ class GUI002(tk.Frame):
         # Slider da distância
         self.distance_slider = customtkinter.CTkSlider(
             master=self,
-            from_=-30,
-            to=30,
+            from_=-27,
+            to=27,
             command=self.distance_command,
             width=240,
             height=8,

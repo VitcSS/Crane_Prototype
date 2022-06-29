@@ -16,12 +16,12 @@ int executeCommand = 0;
 int distanceTool = 0;
 // Indica a posição da torre
 int towerPosition = 0;
-#define MAX_POS_TOWER 720
+#define MAX_POS_TOWER 360
 // Indica se o eletroima esta ativo ou não
 int electromagnet = 0;
 
 // Indica a posição da ferramenta
-int toolPosition = 30;
+int toolPosition = 27;
 
 #define RST 11              // Porta digital D08 - reset do A4988
 #define ENA 12              // Porta digital D07 - ativa (enable) A4988
