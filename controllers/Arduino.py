@@ -2,6 +2,7 @@ from controllers.Strategy import Strategy
 from libs.SerialCommunication import SerialCommunication
 import globalData
 
+import threading
 import time
 
 class Arduino(Strategy):
@@ -10,17 +11,30 @@ class Arduino(Strategy):
         self.serialArduino = None
         self.pauseThread = False
         self.threadTryReceive = False
-        self.inicializa_serial()
+        self._closeThread = False
+        # self.inicializa_serial()
 
     def __del__(self):
+        self._closeThread = True
         del self.serialArduino
 
     def inicializa_serial(self):
+        existsThread = next((thread for thread in threading.enumerate() if thread.name == 'thread_atualiza_telemetria'), False)
+        if existsThread == False:
+            radioThread = threading.Thread(target = self.thread_atualiza_telemetria, daemon=True, name="thread_atualiza_telemetria")
+            radioThread.start()
+        
+        existsThread = next((thread for thread in threading.enumerate() if thread.name == 'thread_solicita_atualiza_telemetria'), False)
+        if existsThread == False:
+            radioThread = threading.Thread(target = self.thread_solicita_atualiza_telemetria, daemon=True, name="thread_solicita_atualiza_telemetria")
+            radioThread.start()
+
         if self.serialArduino is None:
             self.serialArduino = SerialCommunication(port='COM11', timeoutUart=0.3)
             self.serialArduino.startCommunication()
     
     def thread_atualiza_telemetria(self):
+        self.inicializa_serial()
 
         while 1:
             if not self.pauseThread:
@@ -33,9 +47,18 @@ class Arduino(Strategy):
                     globalData.electromagnet = int(mensagem_recebida['electromagnet'])
                     globalData.toolPosition = int(mensagem_recebida['toolPosition'])
                 self.threadTryReceive = False
-            time.sleep(1)
+            time.sleep(0.0001)
+    
+    def thread_solicita_atualiza_telemetria(self):
+        self.inicializa_serial()
+        while 1:
+            if not self.pauseThread:
+                self.valor_sensores()
+                time.sleep(3)
+            time.sleep(0.0001)
 
     def rotacionar_torre(self, graus: int) -> bool:
+        self.inicializa_serial()
         if graus < -720 or graus > 720 or graus == 0: return False
         
         messageToSend = {'command':'rotacionar', 'value': graus}
@@ -50,6 +73,7 @@ class Arduino(Strategy):
         return False
     
     def mover_ferramenta(self, centimentros: int) -> bool:
+        self.inicializa_serial()
         if centimentros < -30 or centimentros > 30 or centimentros == 0: return False
         messageToSend = {'command':'subir_descer', 'value': centimentros}
         self.pauseThread = True
@@ -61,11 +85,9 @@ class Arduino(Strategy):
 
         if 'executeCommand' in command and command['executeCommand'] == 1: return True
         return False
-    
-    def zerar_posicao(self) -> bool:
-        return True
 
     def valor_sensores(self) -> dict:
+        self.inicializa_serial()
         messageToSend = {'command':'sensores', 'value': -1}
         self.pauseThread = True
         while self.threadTryReceive:
@@ -77,6 +99,7 @@ class Arduino(Strategy):
         return {}
 
     def atuar_ferramenta(self, status: bool) -> bool:
+        self.inicializa_serial()
         if status is not True and status is not False: return False
         ima = -1
         if status: ima = 1

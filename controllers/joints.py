@@ -1,4 +1,4 @@
-from object import object
+from controllers.object import object
 from numbers import Number
 from numpy import Inf, deg2rad, rad2deg
 

@@ -1,4 +1,4 @@
-from object import object
+from controllers.object import object
 from numpy import Inf, frombuffer, uint8
 import cv2
 

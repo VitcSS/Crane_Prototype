@@ -1,5 +1,5 @@
 from controllers.Strategy import Strategy
-from Crane_lite import Crane_Lite
+from controllers.Crane_lite import Crane_Lite
 from numpy import power
 Model = Crane_Lite()
 class Copelia(Strategy):

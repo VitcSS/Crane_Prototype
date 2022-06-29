@@ -130,11 +130,12 @@ int giraMotorFerrementa(int centimetros)
         contador = i+1;
         toolPosition = toolPosition - contador;
       }
+      readSensors ();
       sendMessage();
     }
     return centimetros;
   } else {
-    return 0;
+    return 0; 
   }
 }
 
@@ -232,6 +233,7 @@ int giraMotorTorre(int graus)
         contador = int(i/(8.888888888888888888*5));
         towerPosition = towerPosition - contador;
       }
+      readSensors ();
       sendMessage();
       telemetria = millis();
     }
@@ -256,10 +258,10 @@ int giraMotorTorre(int graus)
 
 void readSensors ()
 {
-  float cmMsec1, cmMsec2, cmMsec3;
   long microsec;
   microsec = ultrasonic.timing();
-  cmMsec1 = ultrasonic.convert(microsec, Ultrasonic::CM);
+  distanceTool = ultrasonic.convert(microsec, Ultrasonic::CM);
+  /*
   delay(50);
   microsec = ultrasonic.timing();
   cmMsec2 = ultrasonic.convert(microsec, Ultrasonic::CM);
@@ -273,6 +275,7 @@ void readSensors ()
   if ((cmMsec2 > (cmMsec1-1) && cmMsec2 > (cmMsec3-1)) || (cmMsec2 < (cmMsec1+1) && cmMsec2 < (cmMsec3+1))) distanceTool = (int(cmMsec1) + int(cmMsec3)) / 2;
   // cmMsec3 >>  ou cmMsec3 <<
   if ((cmMsec3 > (cmMsec1-1) && cmMsec3 > (cmMsec2-1)) || (cmMsec3 < (cmMsec1+1) && cmMsec3 < (cmMsec2+1))) distanceTool = (int(cmMsec1) + int(cmMsec2)) / 2;
+  */
 }
 
 void sendMessage ()
@@ -309,13 +312,13 @@ void readExecuteCommand ()
     } else if (command.equals(SUBIR_DESCER)) {
       executeCommand = 1;
       int value = receivedMessage["value"].as<int>();
-      if ((toolPosition + value) < 0 || (toolPosition + value) > 30) {
+      /*if ((toolPosition + value) < 0 || (toolPosition + value) > 30) {
         executeCommand = -1;
         sendMessage();
-      } else {
+      } else { */
         giraMotorFerrementa(value);
         sendMessage();
-      }
+      // }
     } else if (command.equals(ZERAR)) {
       executeCommand = 1;
       distanceTool = 0;

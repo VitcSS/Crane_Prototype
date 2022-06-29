@@ -1,4 +1,4 @@
-import zmqRemoteApi
+from controllers import zmqRemoteApi 
 
 class object:
     # Try to connect to the current simulation open in Coppelia

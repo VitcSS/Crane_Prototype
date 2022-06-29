@@ -1,7 +1,7 @@
 import time
-from sensors import *
-from joints import *
-from magnet import Magnet
+from controllers.sensors import *
+from controllers.joints import *
+from controllers.magnet import Magnet
 
 class Crane_Lite:
     def __init__(self, XY = '/XY', Z = '/Z', Sonar = '/Sonar', ESP = '/ESP_CAM' ):
