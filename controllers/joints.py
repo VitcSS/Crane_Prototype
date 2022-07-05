@@ -12,7 +12,7 @@ class joint(object):
         if value > self.__max__:
             self.sim.setJointTargetPosition(self.handle, self.__max__)
         elif value < self.__min__:
-            self.sim.setJointTargetPosition(self.handle, self.__max__)
+            self.sim.setJointTargetPosition(self.handle, self.__min__)
         else :
             self.sim.setJointTargetPosition(self.handle, value)
     
