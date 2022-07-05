@@ -3,8 +3,11 @@
 const int stepsPerRevolution = 64;
 
 //Inicializa a biblioteca utilizando as portas de 8 a 11 para
-//ligacao ao motor
-Stepper myStepper(stepsPerRevolution, 2, 4, 3, 5);
+#define IN_1 2
+#define IN_2 3
+#define IN_3 4
+#define IN_4 5
+Stepper myStepper(stepsPerRevolution, IN_1, IN_3, IN_2, IN_4);
 
 void setup()
 {

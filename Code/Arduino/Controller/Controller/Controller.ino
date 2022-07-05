@@ -105,14 +105,14 @@ void loop()
 
 int giraMotorFerrementa(int centimetros)
 {
-  if (centimetros >= -30 && centimetros <= 30 && centimetros != 0) {
+  if (centimetros >= -27 && centimetros <= 27 && centimetros != 0) {
     /*
     * 2048 - 13,823
     * x    - 1
     * x = 585,14
     */
     int uma_volta_steps = 2048;
-    float uma_volta_cm = 13.823;
+    float uma_volta_cm = 14;
     int steps_um_cm = uma_volta_steps/uma_volta_cm;       
     int contador = 0;
     for (int i = 0; i<abs(centimetros); i++) {
@@ -312,13 +312,13 @@ void readExecuteCommand ()
     } else if (command.equals(SUBIR_DESCER)) {
       executeCommand = 1;
       int value = receivedMessage["value"].as<int>();
-      /*if ((toolPosition + value) < 0 || (toolPosition + value) > 30) {
+      if ((toolPosition + value) < 0 || (toolPosition + value) > 27) {
         executeCommand = -1;
         sendMessage();
-      } else { */
+      } else {
         giraMotorFerrementa(value);
         sendMessage();
-      // }
+      }
     } else if (command.equals(ZERAR)) {
       executeCommand = 1;
       distanceTool = 0;
