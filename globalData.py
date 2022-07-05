@@ -2,9 +2,10 @@
 
 import threading
 
-global tela_selecionada
-tela_selecionada = 'POR01001'
-"""Choice current screen for system."""
+global telaSelecionada, guindasteSelecionado
+telaSelecionada = 'POR01001'
+guindasteSelecionado = ''
+
 
 """EVENTO PARA GERENCIAR INPUT DE DADOS"""
 eventos = threading.Event()
