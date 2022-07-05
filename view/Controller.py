@@ -307,7 +307,7 @@ class GUI002(tk.Frame):
             bg='#4C6CFD',
             font=('Inter Regular', 20))
 
-        self.actual_position.place(x=1260, y=296, width=165, height=72)
+        self.actual_position.place(x=1260, y=296, width=178, height=72)
 
         self.actual_position_value = tk.Label(
             self,
@@ -345,7 +345,7 @@ class GUI002(tk.Frame):
             font=('Inter Regular', 30))
 
         self.actual_position_toy_value.place(
-            x=1447, y=385, width=60, height=60)
+            x=1447, y=385, width=80, height=60)
 
         self.actual_position_toy_unit_meter = tk.Label(
             self,
