@@ -7,7 +7,7 @@ class Copelia(Strategy):
         Model.XY.set_Position(graus)
 
     def mover_ferramenta(self, centimentros: int) -> bool:
-        Model.Z.set_Position(centimentros*power(10,-2))
+        Model.Z.set_Position(centimentros*(10**-2))
 
     def valor_sensores(self) -> dict:
         try :
