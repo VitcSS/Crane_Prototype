@@ -8,7 +8,7 @@ import globalData as globalData
 
 from controllers.Strategy import Context
 from controllers.Arduino import Arduino
-# from controllers.Copelia import Copelia
+from controllers.Copelia import Copelia
 
 interface = Context(Arduino())
 
@@ -35,16 +35,28 @@ if __name__ == "__main__":
         # controla com copelia
         if stateFsm == 2:
             print("COPELIA")
-            # interface.strategy = Copelia()
+            interface.strategy = Copelia()
             globalData.telaSelecionada = "GUI002"
             globalData.guindasteSelecionado = 'copelia'
             while 1:
                 if globalData.dataInput == 'rotacionar_torre':
                     print("ROTACIONA")
+                    globalData.dataInput = None
+                    interface.rotacionar_torre(globalData.dataInput2)
+                    globalData.dataInput2 = None
+                    time.sleep(0.5)
                 if globalData.dataInput == 'mover_ferramenta':
                     print("MOVER FERRAMENTA")
+                    globalData.dataInput = None
+                    interface.mover_ferramenta(globalData.dataInput2)
+                    globalData.dataInput2 = None
+                    time.sleep(0.5)
                 if globalData.dataInput == 'atuar_ferramenta':
                     print("ATUAR FERRAMENTA")
+                    globalData.dataInput = None
+                    interface.atuar_ferramenta(globalData.dataInput2)
+                    globalData.dataInput2 = None
+                    time.sleep(0.5)
                 if globalData.dataInput == 'voltar_menu':
                     stateFsm = 1
                     break
