@@ -4,10 +4,11 @@ from numpy import power
 Model = Crane_Lite()
 class Copelia(Strategy):
     def rotacionar_torre(self, graus: int) -> bool:
-        Model.XY.set_Position(graus)
+        Model.XY.set_Position(Model.XY.getPosition()+graus)
 
     def mover_ferramenta(self, centimentros: int) -> bool:
-        Model.Z.set_Position(centimentros*(10**-2))
+        aux = Model.Z.getPosition() - centimentros*(10**-2)
+        Model.Z.set_Position(aux)
 
     def valor_sensores(self) -> dict:
         try :
