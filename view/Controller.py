@@ -66,7 +66,7 @@ class TkThread(threading.Thread):
         self.root.mainloop()
 
     def select_page(self):
-        page_name = globalData.tela_selecionada
+        page_name = globalData.telaSelecionada
 
         '''
         EXEMPLO DE ATUALIZACAO EM TEMPO REAL DA PAGINA
@@ -103,12 +103,12 @@ class GUI001(tk.Frame):
     def select_simulation_page(self, event):
         globalData.dataInput = 'copelia'
         globalData.eventos.set()
-        # globalData.tela_selecionada = "GUI002"
+        # globalData.telaSelecionada = "GUI002"
 
     def select_physical_page(self, event):
         globalData.dataInput = 'arduino'
         globalData.eventos.set()
-        # globalData.tela_selecionada = "GUI002"
+        # globalData.telaSelecionada = "GUI002"
 
     def page_build(self):
         # Titulo Principal
@@ -178,7 +178,7 @@ class GUI002(tk.Frame):
             self.magnet_button.photo = self.off_magnet_image
             self.magnet_button.image = self.off_magnet_image
             self.is_magnet_active = False
-        
+
         globalData.dataInput = 'atuar_ferramenta'
         globalData.dataInput2 = self.is_magnet_active
 
@@ -202,15 +202,45 @@ class GUI002(tk.Frame):
         self.ultrasson_meter_value['text'] = str(globalData.distanceTool)
         self.actual_position_value['text'] = str(globalData.towerPosition)
         self.actual_position_toy_value['text'] = str(globalData.toolPosition)
+        self.title['text'] = f'Guindaste {"simulado" if globalData.guindasteSelecionado.lower() == "copelia" else "físico"}'
 
+    def back_to_menu(self):
+        self.ultrasson_meter_value['text'] = '0'
+        self.actual_position_value['text'] = '0'
+        self.actual_position_toy_value['text'] = '0'
+        globalData.dataInput = 'voltar_menu'
 
     def page_build(self):
         # Titulo Principal
+        self.title_background_image = Image.open(
+            relative_to_assets('images/Rectangle 6.png'))
+        self.title_background_image = ImageTk.PhotoImage(
+            self.title_background_image)
+        self.title_background = tk.Label(
+            self,
+            image=self.title_background_image,
+            bg='#262626')
+        self.title_background.image = self.title_background_image
+        self.title_background.place(x=0, y=0)
+
+        self.back_to_menu_image = Image.open(
+            relative_to_assets('images/arrow-down.png'))
+        self.back_to_menu_image = ImageTk.PhotoImage(
+            self.back_to_menu_image)
+        self.back_to_menu_button = tk.Label(
+            self,
+            image=self.back_to_menu_image,
+            bg='#262626')
+        self.back_to_menu_button.image = self.back_to_menu_image
+        self.back_to_menu_button.place(x=73.19, y=17)
+        self.back_to_menu_button.bind(
+            '<Button-1>', lambda e: self.back_to_menu())
+
         self.title = tk.Label(
             self,
-            text='Guindaste Simulado',
+            text=f'Guindaste {"simulado" if globalData.guindasteSelecionado == "COPELIA" else "físico"}',
             foreground=text_color,
-            bg=background_color,
+            bg='#262626',
             font=('Inter Regular', 20))
 
         self.title.place(x=830, y=16, width=260, height=24)
@@ -267,7 +297,8 @@ class GUI002(tk.Frame):
             bg='#4C6CFD',
             font=('Inter Regular', 14))
 
-        self.ultrasson_meter_unit_meter.place(x=577, y=352, width=50, height=60)
+        self.ultrasson_meter_unit_meter.place(
+            x=577, y=352, width=50, height=60)
 
         self.actual_position = tk.Label(
             self,
@@ -294,7 +325,8 @@ class GUI002(tk.Frame):
             bg='#4C6CFD',
             font=('Inter Regular', 14))
 
-        self.actual_position_unit_meter.place(x=1530, y=302, width=50, height=60)
+        self.actual_position_unit_meter.place(
+            x=1530, y=302, width=50, height=60)
 
         self.actual_position_toy = tk.Label(
             self,
@@ -324,16 +356,6 @@ class GUI002(tk.Frame):
 
         self.actual_position_toy_unit_meter.place(
             x=1530, y=385, width=50, height=60)
-
-        # Titulo Principal
-        self.title = tk.Label(
-            self,
-            text='Guindaste Simulado',
-            foreground=text_color,
-            bg=background_color,
-            font=('Inter Regular', 20))
-
-        self.title.place(x=830, y=16, width=260, height=24)
 
         # Seção 2
         # Retângulo dos controles
