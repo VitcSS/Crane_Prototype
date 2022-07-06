@@ -21,13 +21,13 @@ class Arduino(Strategy):
     def inicializa_serial(self):
         existsThread = next((thread for thread in threading.enumerate() if thread.name == 'thread_atualiza_telemetria'), False)
         if existsThread == False:
-            radioThread = threading.Thread(target = self.thread_atualiza_telemetria, daemon=True, name="thread_atualiza_telemetria")
-            radioThread.start()
+            updateTelemetriaThread = threading.Thread(target = self.thread_atualiza_telemetria, daemon=True, name="thread_atualiza_telemetria")
+            updateTelemetriaThread.start()
         
         existsThread = next((thread for thread in threading.enumerate() if thread.name == 'thread_solicita_atualiza_telemetria'), False)
         if existsThread == False:
-            radioThread = threading.Thread(target = self.thread_solicita_atualiza_telemetria, daemon=True, name="thread_solicita_atualiza_telemetria")
-            radioThread.start()
+            requestUpdateTelemetriaThread = threading.Thread(target = self.thread_solicita_atualiza_telemetria, daemon=True, name="thread_solicita_atualiza_telemetria")
+            requestUpdateTelemetriaThread.start()
 
         if self.serialArduino is None:
             self.serialArduino = SerialCommunication(port='COM11', timeoutUart=0.3)
@@ -60,7 +60,7 @@ class Arduino(Strategy):
                     globalData.towerPosition = int(mensagem_recebida['towerPosition'])
                     globalData.electromagnet = int(mensagem_recebida['electromagnet'])
                     globalData.toolPosition = int(mensagem_recebida['toolPosition'])
-                time.sleep(3)
+                time.sleep(1)
             time.sleep(0.0001)
 
     def rotacionar_torre(self, graus: int) -> bool:
