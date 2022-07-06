@@ -16,12 +16,14 @@ class Copelia(Strategy):
             updateTelemetriaThread.start()
 
     def thread_atualiza_telemetria(self):
-        valores = self.valor_sensores()
-        globalData.distanceTool = int(valores['distanceTool'])
-        globalData.towerPosition = int(valores['towerPosition'])
-        globalData.electromagnet = int(valores['electromagnet'])
-        globalData.toolPosition = int(valores['toolPosition'])
-        time.sleep(1)
+        while 1:
+            valores = self.valor_sensores()
+            print("Valore sensores: ", valores)
+            globalData.distanceTool = int(valores['distanceTool'])
+            globalData.towerPosition = int(valores['towerPosition'])
+            globalData.electromagnet = int(valores['electromagnet'])
+            globalData.toolPosition = 38 - int(valores['toolPosition']) 
+            time.sleep(1)
         
     def rotacionar_torre(self, graus: int) -> bool:
         self.Model.XY.set_Position(self.Model.XY.getPosition()+graus)
@@ -37,7 +39,7 @@ class Copelia(Strategy):
             dist = self.Model.Sonar.detect()
         
         return {'distanceTool' : dist*power(10,2),
-                'towerPosition' : self.Model.XY.getPosition, 
+                'towerPosition' : self.Model.XY.getPosition(), 
                 'electromagnet' : self.Model.actuator.is_full(), 
                 'toolPosition' : self.Model.Z.getPosition()*power(10,2) }
 
