@@ -36,10 +36,11 @@ if __name__ == "__main__":
         # controla com copelia
         if stateFsm == 2:
             print("COPELIA")
-            interface.strategy = Copelia()
             globalData.telaSelecionada = "GUI002"
             globalData.guindasteSelecionado = 'copelia'
             object.connect_Coppelia()
+            interface.strategy = Copelia()
+
             while 1:
                 if globalData.dataInput == 'rotacionar_torre':
                     print("ROTACIONA")

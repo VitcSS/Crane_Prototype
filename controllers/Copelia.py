@@ -4,7 +4,7 @@ from numpy import power
 class Copelia(Strategy):
     Model = None
     
-    def Copelia(self):
+    def __init__(self):
         self.Model = Crane_Lite()
         
     def rotacionar_torre(self, graus: int) -> bool:
@@ -26,7 +26,7 @@ class Copelia(Strategy):
                 'toolPosition' : self.Model.Z.getPosition()*power(10,2) }
 
     def atuar_ferramenta(self, status: bool) -> bool:
-        if self.Model.actuator.is_full:
+        if self.Model.actuator.is_full():
             self.Model.actuator.off()
         else :
             self.Model.actuator.on()
