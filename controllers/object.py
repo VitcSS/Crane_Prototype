@@ -10,7 +10,7 @@ class object:
         self.handle = self.sim.getObject(self.fantasy_name)
 
     @staticmethod
-    def connect_Coppelia(self):
+    def connect_Coppelia():
         try : 
             object.sim = zmqRemoteApi.RemoteAPIClient().getObject('sim')
             print("Connected to simulation")

@@ -9,6 +9,7 @@ import globalData as globalData
 from controllers.Strategy import Context
 from controllers.Arduino import Arduino
 from controllers.Copelia import Copelia
+from controllers.object import object
 
 interface = Context(Arduino())
 
@@ -38,6 +39,7 @@ if __name__ == "__main__":
             interface.strategy = Copelia()
             globalData.telaSelecionada = "GUI002"
             globalData.guindasteSelecionado = 'copelia'
+            object.connect_Coppelia()
             while 1:
                 if globalData.dataInput == 'rotacionar_torre':
                     print("ROTACIONA")

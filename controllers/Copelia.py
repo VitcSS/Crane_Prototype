@@ -1,28 +1,32 @@
 from controllers.Strategy import Strategy
 from controllers.Crane_lite import Crane_Lite
 from numpy import power
-Model = Crane_Lite()
 class Copelia(Strategy):
+    Model = None
+    
+    def Copelia(self):
+        self.Model = Crane_Lite()
+        
     def rotacionar_torre(self, graus: int) -> bool:
-        Model.XY.set_Position(Model.XY.getPosition()+graus)
+        self.Model.XY.set_Position(self.Model.XY.getPosition()+graus)
 
     def mover_ferramenta(self, centimentros: int) -> bool:
-        aux = Model.Z.getPosition() - centimentros*(10**-2)
-        Model.Z.set_Position(aux)
+        aux = self.Model.Z.getPosition() - centimentros*(10**-2)
+        self.Model.Z.set_Position(aux)
 
     def valor_sensores(self) -> dict:
         try :
-            dist,_ = Model.Sonar.detect()
+            dist,_ = self.Model.Sonar.detect()
         except :
-            dist = Model.Sonar.detect()
+            dist = self.Model.Sonar.detect()
         
         return {'distanceTool' : dist*power(10,2),
-                'towerPosition' : Model.XY.getPosition, 
-                'electromagnet' : Model.actuator.is_full(), 
-                'toolPosition' : Model.Z.getPosition()*power(10,2) }
+                'towerPosition' : self.Model.XY.getPosition, 
+                'electromagnet' : self.Model.actuator.is_full(), 
+                'toolPosition' : self.Model.Z.getPosition()*power(10,2) }
 
     def atuar_ferramenta(self, status: bool) -> bool:
-        if Model.actuator.is_full:
-            Model.actuator.off()
+        if self.Model.actuator.is_full:
+            self.Model.actuator.off()
         else :
-            Model.actuator.on()
+            self.Model.actuator.on()
