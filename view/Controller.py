@@ -223,18 +223,18 @@ class GUI002(tk.Frame):
         self.title_background.image = self.title_background_image
         self.title_background.place(x=0, y=0)
 
-        self.back_to_menu_image = Image.open(
-            relative_to_assets('images/arrow-down.png'))
-        self.back_to_menu_image = ImageTk.PhotoImage(
-            self.back_to_menu_image)
-        self.back_to_menu_button = tk.Label(
-            self,
-            image=self.back_to_menu_image,
-            bg='#262626')
-        self.back_to_menu_button.image = self.back_to_menu_image
-        self.back_to_menu_button.place(x=73.19, y=17)
-        self.back_to_menu_button.bind(
-            '<Button-1>', lambda e: self.back_to_menu())
+        # self.back_to_menu_image = Image.open(
+        #     relative_to_assets('images/arrow-down.png'))
+        # self.back_to_menu_image = ImageTk.PhotoImage(
+        #     self.back_to_menu_image)
+        # self.back_to_menu_button = tk.Label(
+        #     self,
+        #     image=self.back_to_menu_image,
+        #     bg='#262626')
+        # self.back_to_menu_button.image = self.back_to_menu_image
+        # self.back_to_menu_button.place(x=73.19, y=17)
+        # self.back_to_menu_button.bind(
+        #     '<Button-1>', lambda e: self.back_to_menu())
 
         self.title = tk.Label(
             self,
